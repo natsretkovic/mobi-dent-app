@@ -1,5 +1,6 @@
 package com.example.myapplication.view
 
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,11 +21,12 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.navigation.NavHostController
 import com.example.myapplication.viewmodel.AuthViewModel
 
 
 @Composable
-fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel){
+fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, navContoller: NavHostController){
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -32,6 +34,8 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel){
     var prezime by remember { mutableStateOf("") }
     var brTelefona by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
+    var slikaUri by remember {mutableStateOf<Uri?>(null)}
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -77,6 +81,7 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel){
                 ) { success, errorMessage ->
                     if (success) {
                         message = "Registracija je uspesna!"
+                        navContoller.navigate("home")
                     } else {
                         message = errorMessage ?: "Doslo je do greske"
                     }

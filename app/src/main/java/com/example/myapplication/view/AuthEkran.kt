@@ -19,6 +19,7 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun AuthEkran(modifier: Modifier = Modifier, navController: NavHostController) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()

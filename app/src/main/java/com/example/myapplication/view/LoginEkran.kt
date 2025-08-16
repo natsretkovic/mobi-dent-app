@@ -16,23 +16,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.myapplication.viewmodel.AuthViewModel
 
 @Composable
-fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel) {
+fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel, navController: NavHostController) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var message by remember {mutableStateOf("")}
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         contentAlignment = Alignment.Center
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
             Text("Ulogujte se na vas nalog koristeci email i lozinku koju ste naveli pri registraciji")
-         Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = email,
                 onValueChange = { email = it },
@@ -42,15 +44,21 @@ fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel) {
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
-               // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                )
+                // keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
             Spacer(modifier = Modifier.height(16.dp))
-           /* Button(onClick = {
-                viewModel.loginUser(email, password)
+            Button(onClick = {
+                viewModel.loginUser(email, password,) { success, errorMessage ->
+                    if (success) {
+                        navController.navigate("home")
+                    }
+                    else{
+                        message = errorMessage ?: "Doslo je do greske"
+                    }
+                }
             }) {
                 Text("Login")
             }
-            errorMessage?.let { Text(it, color = Color.Red) }*/
         }
     }
-    }
+}

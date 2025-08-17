@@ -1,16 +1,18 @@
 package com.example.myapplication.view
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.ui.PratiLokaciju
+//import com.example.myapplication.view.PratiLokaciju
+//import com.example.myapplication.ui.PratiLokaciju
 import com.example.myapplication.viewmodel.AuthViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
+fun AppNavigation(modifier: Modifier = Modifier, viewModel: AuthViewModel,context: Context) {
     val navController = rememberNavController()
     val ulogovan = Firebase.auth.currentUser!=null
     val prvaStrana = if(ulogovan) "home" else "auth"
@@ -32,7 +34,7 @@ fun AppNavigation(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
             GoogleMapaEkran()
         }
         composable("trackLocation"){
-            PratiLokaciju()
+            PratiLokaciju(context)
         }
     }
 

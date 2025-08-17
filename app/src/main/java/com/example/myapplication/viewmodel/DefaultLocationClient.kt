@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
+import android.util.Log
 import com.example.myapplication.viewmodel.utils.LocationClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -28,17 +29,18 @@ class DefaultLocationClient(
                 throw LocationClient.LocationException("Nedotsaje dozvola o lokaciji")
             }
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            val gpsDozvoljen = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            val mrezaDozvoljena = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-            if(!gpsDozvoljen && !mrezaDozvoljena ){
+            val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+            if(!isGpsEnabled && !isNetworkEnabled ){
                 throw LocationClient.LocationException("Nisu dozvoljen gps")
             }
-            val request = LocationRequest.create().setInterval(interval).setFastestInterval(interval)
+            val request = LocationRequest.Builder(interval).build()
             val locationCallback = object : LocationCallback(){
                 override fun onLocationResult(result: LocationResult){
-                    super.onLocationResult(result)
+                    //super.onLocationResult(result)
                     result.locations.lastOrNull()?.let { location ->
-                        launch() { send(location) }
+                        Log.i("Location client",location.toString())
+                        launch{ send(location) }
                     }
                 }
             }

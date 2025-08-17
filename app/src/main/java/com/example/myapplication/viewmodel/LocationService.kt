@@ -22,7 +22,7 @@ class LocationService() : Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient: LocationClient
 
-    override fun onBind(intent: Intent?): IBinder? {
+    override fun onBind(p0: Intent?): IBinder? {
         return null
     }
 
@@ -43,18 +43,18 @@ class LocationService() : Service() {
     }
     private fun start(){
         val notification = NotificationCompat.Builder(this, "location").setContentTitle("Tracking location...")
-            .setContentTitle("Location: null")
+            .setContentText("Location: null")
             .setSmallIcon(R.drawable.ic_launcher_background).setOngoing(true)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        locationClient.getLocationUpdates(10000L)
+        locationClient.getLocationUpdates(5000L)
             .catch { e -> e.printStackTrace() }
             .onEach { location ->
                 val lat = location.latitude.toString()
                 val long = location.longitude.toString()
-                val updatednotification = notification.setContentText("LOCATION IS ($lat) ($long)")
+                val updatedNotification = notification.setContentText("LOCATION IS ($lat) ($long)")
 
-                notificationManager.notify(1,updatednotification.build())
+                notificationManager.notify(1,updatedNotification.build())
             } .launchIn(serviceScope)
         startForeground(1,notification.build())
 

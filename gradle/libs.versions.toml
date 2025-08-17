@@ -11,6 +11,7 @@ composeBom = "2024.09.00"
 firebaseBom = "34.1.0"
 navigationRuntimeKtx = "2.9.3"
 navigationCompose = "2.9.3"
+secretsGradlePlugin = "2.0.1"
 
 
 [libraries]
@@ -35,6 +36,7 @@ firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-fires
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version = "21.0.2" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradleplugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 
 
 [plugins]

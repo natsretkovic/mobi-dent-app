@@ -1,5 +1,8 @@
 package com.example.myapplication.view
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.myapplication.viewmodel.AuthViewModel
+import androidx.compose.ui.platform.LocalContext
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -36,6 +38,22 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController){
             }) {
 
                 Text("Odjavi se")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            val context = LocalContext.current
+
+            val locationPermissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                } else {
+                    Toast.makeText(context, "Lokacija nije odobrena", Toast.LENGTH_SHORT).show()
+                }
+            }
+            Button(onClick = {
+                navContoller.navigate("map")
+            }){
+                Text("Klik za mapu")
             }
         }
     }

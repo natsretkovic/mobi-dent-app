@@ -28,6 +28,9 @@ fun AppNavigation(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
         composable("home"){
             HomeEkran(modifier,navController)
         }
+        composable("map"){
+            GoogleMapaEkran()
+        }
     }
 
 }

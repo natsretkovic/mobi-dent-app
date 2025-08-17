@@ -6,12 +6,17 @@
      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
      <uses-feature android:name="android.hardware.camera" android:required="false" /> --> <!-- kamera hardverski -->
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
+    <uses-permission
+        android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    
 
     <application
         android:allowBackup="true"
@@ -25,6 +30,8 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
+        <service android:name=".viewmodel.LocationService" android:foregroundServiceType="location"
+            tools:ignore="ForegroundServicePermission" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

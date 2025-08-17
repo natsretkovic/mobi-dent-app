@@ -55,6 +55,11 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController){
             }){
                 Text("Klik za mapu")
             }
+            Button(onClick = {
+                navContoller.navigate("trackLocation")
+            }){
+                Text("Klik za odobrenje")
+            }
         }
     }
 

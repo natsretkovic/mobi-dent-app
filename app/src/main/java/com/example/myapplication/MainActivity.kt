@@ -22,11 +22,13 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.view.AppNavigation
 import com.example.myapplication.view.AuthEkran
 import com.example.myapplication.viewmodel.AuthViewModel
+import com.example.myapplication.viewmodel.LokacijaViewModel
 
 
 class MainActivity : ComponentActivity() {
 
     private val authViewModel = AuthViewModel()
+    private val locViewModel = LokacijaViewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +40,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                AppNavigation(Modifier.padding(innerPadding), viewModel =  authViewModel,this)
+                AppNavigation(Modifier.padding(innerPadding), viewModel =  authViewModel,this,
+                    locViewModel)
             }
         }
     }

@@ -9,10 +9,11 @@ import androidx.navigation.compose.rememberNavController
 //import com.example.myapplication.view.PratiLokaciju
 //import com.example.myapplication.ui.PratiLokaciju
 import com.example.myapplication.viewmodel.AuthViewModel
+import com.example.myapplication.viewmodel.LokacijaViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier, viewModel: AuthViewModel,context: Context) {
+fun AppNavigation(modifier: Modifier = Modifier, viewModel: AuthViewModel,context: Context, viewModelLocation: LokacijaViewModel) {
     val navController = rememberNavController()
     val ulogovan = Firebase.auth.currentUser!=null
     val prvaStrana = if(ulogovan) "home" else "auth"
@@ -31,7 +32,7 @@ fun AppNavigation(modifier: Modifier = Modifier, viewModel: AuthViewModel,contex
             HomeEkran(modifier,navController)
         }
         composable("map"){
-            GoogleMapaEkran()
+            GoogleMapaEkran(viewModelLocation)
         }
         composable("trackLocation"){
             PratiLokaciju(context)

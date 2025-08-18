@@ -42,7 +42,7 @@ fun AuthEkran(modifier: Modifier = Modifier, navController: NavHostController) {
             Text( text = "Login")
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Button(onClick = {navController.navigate("register") }, modifier = Modifier.fillMaxWidth().height(60.dp) ){
+        Button(onClick = {navController.navigate("register")  }, modifier = Modifier.fillMaxWidth().height(60.dp) ){
             Text( text = "Registracija")
         }
 

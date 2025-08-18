@@ -71,6 +71,7 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation()
+
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -86,7 +87,11 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
                 ) { success, errorMessage ->
                     if (success) {
                         message = "Registracija je uspesna!"
-                        navContoller.navigate("home")
+                        navContoller.navigate("auth"){
+                            popUpTo("register") {
+                                inclusive = true
+                            }
+                        }
                     } else {
                         message = errorMessage ?: "Doslo je do greske"
                     }

@@ -34,7 +34,11 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController){
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
                 Firebase.auth.signOut()
-                navContoller.navigate("auth")
+                navContoller.navigate("auth"){
+                    popUpTo("home"){
+                        inclusive = true
+                    }
+                }
             }) {
 
                 Text("Odjavi se")

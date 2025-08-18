@@ -50,7 +50,12 @@ fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel, navController: NavH
             Button(onClick = {
                 viewModel.loginUser(username, password,) { success, errorMessage ->
                     if (success) {
-                        navController.navigate("home")
+                        navController.navigate("home"){
+                        popUpTo("auth") {
+                            inclusive = true
+                        }
+                        }
+
                     }
                     else{
                         message = errorMessage ?: "Doslo je do greske"

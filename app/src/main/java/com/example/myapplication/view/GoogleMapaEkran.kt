@@ -21,6 +21,7 @@ fun GoogleMapaEkran( modifier: Modifier = Modifier,
                      properties: MapProperties = MapProperties(),
                      uiSettings: MapUiSettings = MapUiSettings()
 ) {
+
     GoogleMap(
         modifier = modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,

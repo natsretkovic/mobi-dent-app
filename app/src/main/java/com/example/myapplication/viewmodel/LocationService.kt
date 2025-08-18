@@ -13,14 +13,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import com.example.myapplication.R
+import com.example.myapplication.model.LokacijaKorisnika
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 
 class LocationService() : Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient: LocationClient
+    private lateinit var db: FirebaseFirestore
+    private val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -32,20 +38,25 @@ class LocationService() : Service() {
             applicationContext,
             LocationServices.getFusedLocationProviderClient(applicationContext)
         )
+        db = FirebaseFirestore.getInstance()
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when(intent?.action){
+        when (intent?.action) {
             ACTION_START -> start()
             ACTION_STOP -> stop()
         }
         return super.onStartCommand(intent, flags, startId)
     }
-    private fun start(){
-        val notification = NotificationCompat.Builder(this, "location").setContentTitle("Tracking location...")
-            .setContentText("Location: null")
-            .setSmallIcon(R.drawable.ic_launcher_background).setOngoing(true)
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+    private fun start() {
+        val notification =
+            NotificationCompat.Builder(this, "location").setContentTitle("Tracking location...")
+                .setContentText("Location: null")
+                .setSmallIcon(R.drawable.ic_launcher_background).setOngoing(true)
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         locationClient.getLocationUpdates(5000L)
             .catch { e -> e.printStackTrace() }
@@ -53,10 +64,14 @@ class LocationService() : Service() {
                 val lat = location.latitude.toString()
                 val long = location.longitude.toString()
                 val updatedNotification = notification.setContentText("LOCATION IS ($lat) ($long)")
+                notificationManager.notify(1, updatedNotification.build())
+                val lokacijakorisnika = LokacijaKorisnika(location.latitude,location.longitude)
+                db.collection("korisnici").document(userId)
+                    .set(lokacijakorisnika, SetOptions.merge()).addOnSuccessListener { println("Location updated in Firestore") }
+                    .addOnFailureListener { e -> println("Error updating location: $e") }
 
-                notificationManager.notify(1,updatedNotification.build())
-            } .launchIn(serviceScope)
-        startForeground(1,notification.build())
+            }.launchIn(serviceScope)
+        startForeground(1, notification.build())
 
     }
 
@@ -64,12 +79,14 @@ class LocationService() : Service() {
         super.onDestroy()
         serviceScope.cancel()
     }
-    private fun stop(){
+
+    private fun stop() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
 
     }
-    companion object{
+
+    companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
     }

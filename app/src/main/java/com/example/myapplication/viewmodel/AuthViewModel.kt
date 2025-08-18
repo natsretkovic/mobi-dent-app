@@ -1,100 +1,94 @@
 package com.example.myapplication.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.model.Korisnik
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class AuthViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
 
-    fun registerUser(email: String, password: String, ime: String, prezime: String, brTelefona: String,username :String, onResult : (Boolean,String?)-> Unit) {
-        auth.createUserWithEmailAndPassword(email,password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val userId = auth.currentUser!!.uid
-                    val korisnik = Korisnik(ime, prezime, brTelefona,username,email)
-                    db.collection("korisnici").document(userId).set(korisnik).addOnCompleteListener {
-                        dbTask -> if(dbTask.isSuccessful){
-                            onResult(true,null)
-                    }
-                        else{
-                            onResult(false, "Nesto je lose")
-                        }
-                    }
+    fun registerUser(
+        email: String,
+        password: String,
+        ime: String,
+        prezime: String,
+        brTelefona: String,
+        username: String,
+        slikaUri: Uri?,
+        onResult: (Boolean, String?) -> Unit,
+
+        ) {
+        viewModelScope.launch {
+            try {
+                if (isUsernameTaken(username)) {
+                    onResult(false, "Korisnicko ime je zauzeto")
+                    return@launch
                 }
-                else{ onResult(false,
-                    task.exception?.localizedMessage) }
+                val userCredential =
+                    auth.createUserWithEmailAndPassword(email, password).await()
+                val userId = userCredential.user?.uid ?: throw IllegalStateException("User ID not found.")
+                val slikaUrl: String? = if (slikaUri != null) {
+                    val storageRef = storage.reference.child("profilna_slika/${userId}.jpg")
+                        storageRef.putFile(slikaUri).await()
+                        storageRef.downloadUrl.await().toString()
+                    } else {
+                        null
+                    }
+                    val korisnik = Korisnik(ime, prezime, brTelefona, username, email, slikaUrl)
+                    db.collection("korisnici").document(userId).set(korisnik).await()
+            } catch (e: Exception) {
+                onResult(false, e.localizedMessage ?: "Došlo je do greške.")
             }
+        }
     }
     fun loginUser(
         userName: String,
         password: String,
         onResult: (Boolean, String?) -> Unit
     ) {
-        val auth = FirebaseAuth.getInstance()
-
-        isUsernameTaken(userName) { exists ->
-            if (!exists) {
-                onResult(false, "Username not found")
-            } else {
-                getEmailByUsername(userName) { email ->
-                    if (email != null) {
-                        auth.signInWithEmailAndPassword(email, password)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    onResult(true, null)
-                                } else {
-                                    onResult(false, task.exception?.localizedMessage)
-                                }
-                            }
-                    } else {
-                        onResult(false, "Email not found for this username")
+        viewModelScope.launch {
+            try {
+                    val email = getEmailByUsername(userName)
+                    if (email == null) {
+                        onResult(false, "Korisničko ime nije pronađeno.")
+                        return@launch
                     }
+                    auth.signInWithEmailAndPassword(email, password).await()
+                    onResult(true, null)
+                } catch (e: Exception) {
+                    onResult(false, e.localizedMessage ?: "Došlo je do greške.")
                 }
             }
         }
-    }
-    fun queryUserByUsername(
-        inputUsername: String,
-        onResult: (QuerySnapshot?) -> Unit
-    ) {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("korisnici")
+   private suspend fun getEmailByUsername(inputUsername: String): String? {
+        val snapshot = db.collection("korisnici")
             .whereEqualTo("username", inputUsername)
             .get()
-            .addOnSuccessListener { snapshot ->
-                onResult(snapshot)
-            }
-            .addOnFailureListener { e ->
-                e.printStackTrace()
-                onResult(null)
-            }
-    }
-    fun getEmailByUsername(inputUsername: String, onResult: (String?) -> Unit) {
-        queryUserByUsername(inputUsername) { snapshot ->
-            if (snapshot != null && !snapshot.isEmpty) {
-                val document = snapshot.documents[0]
-                val email = document.getString("email")
-                Log.d("LoginDebug", "Pronađen email: $email")
-                onResult(email)
-            } else {
-                Log.d("LoginDebug", "Nije pronadjen email:")
-                onResult(null)
-            }
+            .await()
+        if (snapshot.isEmpty) {
+            return null
         }
+       return snapshot.documents[0].getString("email")
     }
-    fun isUsernameTaken(inputUsername: String, onResult: (Boolean) -> Unit) {
-        queryUserByUsername(inputUsername) { snapshot ->
-            if (snapshot != null && !snapshot.isEmpty) {
-                onResult(true)
-            } else {
-                onResult(false)
-            }
+    private suspend fun isUsernameTaken(inputUsername: String): Boolean {
+        val snapshot = db.collection("korisnici")
+            .whereEqualTo("username", inputUsername)
+            .get()
+            .await()
+        if(snapshot.isEmpty){
+            return false
         }
+        return true
     }
 
 }

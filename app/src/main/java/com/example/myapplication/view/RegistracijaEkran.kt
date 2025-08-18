@@ -83,7 +83,8 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
                     ime,
                     prezime,
                     brTelefona,
-                    username
+                    username,
+                    slikaUri
                 ) { success, errorMessage ->
                     if (success) {
                         message = "Registracija je uspesna!"

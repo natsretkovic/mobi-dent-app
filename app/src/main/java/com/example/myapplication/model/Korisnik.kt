@@ -5,7 +5,7 @@ data class Korisnik(
     val prezime: String = "",
     val brojTelefona: String = "",
     val username: String="",
-    val email : String=""
-    //val profilnaSlikaUrl : String? = "",
+    val email : String="",
+    val profilnaSlikaUrl : String? = null,
     //val poeni: Int = 0
 )

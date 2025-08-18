@@ -22,7 +22,7 @@ import com.example.myapplication.viewmodel.AuthViewModel
 @Composable
 fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel, navController: NavHostController) {
 
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var message by remember {mutableStateOf("")}
 
@@ -33,12 +33,12 @@ fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel, navController: NavH
         contentAlignment = Alignment.Center
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-            Text("Ulogujte se na vas nalog koristeci email i lozinku koju ste naveli pri registraciji")
+            Text("Ulogujte se na vas nalog koristeci username i lozinku koju ste naveli pri registraciji")
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") })
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("username") })
             TextField(
                 value = password,
                 onValueChange = { password = it },
@@ -48,7 +48,7 @@ fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel, navController: NavH
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
-                viewModel.loginUser(email, password,) { success, errorMessage ->
+                viewModel.loginUser(username, password,) { success, errorMessage ->
                     if (success) {
                         navController.navigate("home")
                     }

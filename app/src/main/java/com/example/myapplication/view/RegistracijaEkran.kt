@@ -35,6 +35,7 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
     var brTelefona by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
     var slikaUri by remember {mutableStateOf<Uri?>(null)}
+    var username by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -45,7 +46,10 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
         Column(
             modifier = modifier.padding(16.dp)
         ) {
-
+            TextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") })
             TextField(
                 value = ime,
                 onValueChange = { ime = it },
@@ -77,7 +81,8 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
                     password,
                     ime,
                     prezime,
-                    brTelefona
+                    brTelefona,
+                    username
                 ) { success, errorMessage ->
                     if (success) {
                         message = "Registracija je uspesna!"

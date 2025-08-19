@@ -1,4 +1,8 @@
 package com.example.myapplication.model
 
-data class Ordinacija(val naziv: String = "", val grad: String = "", val adresa: String = "", val latitude: Double = 0.0,
-                      val longitude: Double = 0.0)
+data class Ordinacija(
+    val naziv: String = "",
+    val doktor : String="",
+    val procedura : String = "",
+    val ocena : Double =0.0,
+    val komentar : String="")

@@ -41,7 +41,6 @@ fun PratiLokaciju(context: Context) {
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Button(onClick = {
-                // kad klikneš Start → prvo traži permisiju
                 permissionLauncher.launch(
                     arrayOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,

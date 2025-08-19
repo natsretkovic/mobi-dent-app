@@ -22,12 +22,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.model.Ordinacija
 import com.example.myapplication.viewmodel.AuthViewModel
+import com.example.myapplication.viewmodel.LokacijaViewModel
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 
 @Composable
 fun OrdinacijaEkran(
     modifier: Modifier,
-    viewModel: OrdinacijaViewModel
+    viewModel: OrdinacijaViewModel,
+    viewModelLoc: LokacijaViewModel
 ) {
     var naziv by remember { mutableStateOf("") }
     var doktor by remember { mutableStateOf("") }
@@ -63,20 +65,20 @@ fun OrdinacijaEkran(
                 value = ocena,
                 onValueChange = { ocena = it },
                 label = { Text("Ocena") })
-            Button(onClick = {
-                viewModel.addOrdinacija(
-                    naziv,
-                    doktor,
-                    procedura,
-                    ocena.toDouble(),
-                    komentar
-                )
-            }, modifier = Modifier.fillMaxWidth())
-            {
-                Text(text = "Registruj se")
+            Button(
+                onClick = {
+                    viewModel.addOrdinacija(
+                        naziv,
+                        doktor,
+                        procedura,
+                        ocena.toDouble(),
+                        komentar
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Dodaj")
             }
-
-
         }
     }
 }

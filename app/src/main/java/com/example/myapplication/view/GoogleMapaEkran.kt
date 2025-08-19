@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.example.myapplication.model.LokacijaKorisnika
 import com.example.myapplication.viewmodel.LokacijaViewModel
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -15,6 +16,7 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 
 @Composable
 fun GoogleMapaEkran( viewModel: LokacijaViewModel,
@@ -26,6 +28,8 @@ fun GoogleMapaEkran( viewModel: LokacijaViewModel,
                      uiSettings: MapUiSettings = MapUiSettings(),
 ) {
     val userLocation = viewModel.userLocation.collectAsState(initial = null)
+    val ordinacije = viewModel.mapOrdinacija.collectAsState(initial = emptyList())
+    //val markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.crveni_zub)
     GoogleMap(
         modifier = modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -43,6 +47,15 @@ fun GoogleMapaEkran( viewModel: LokacijaViewModel,
         userLocation.value?.let { loc ->
             val newPosition = LatLng(loc.latitude, loc.longitude)
             cameraPositionState.position = CameraPosition.fromLatLngZoom(newPosition, 15f)
+        }
+        ordinacije.value.forEach { ordinacija ->
+            Marker(
+                state = rememberMarkerState(
+                    position = LatLng(ordinacija.latitude, ordinacija.longitude)
+                ),
+                title = "Ordinacija $ordinacija.naziv",
+                snippet = "Lokacija"
+            )
         }
     }
 }

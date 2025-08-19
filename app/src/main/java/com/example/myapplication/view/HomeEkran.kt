@@ -67,7 +67,7 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController){
             Button(onClick = {
                 navContoller.navigate("ordinacija")
             }){
-                Text("Dodajte ordinaciju")
+                Text("Upravljajte ordinacijom")
             }
         }
     }

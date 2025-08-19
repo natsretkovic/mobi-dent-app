@@ -39,7 +39,8 @@ fun AppNavigation(modifier: Modifier = Modifier, viewModel: AuthViewModel,contex
             PratiLokaciju(context)
         }
         composable("ordinacija"){
-            OrdinacijaEkran(modifier,viewModelOrdinacija)
+            OrdinacijaEkran(modifier,viewModelOrdinacija,
+            viewModelLocation)
         }
     }
 

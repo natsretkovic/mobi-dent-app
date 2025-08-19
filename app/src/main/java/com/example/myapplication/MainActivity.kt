@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
     private val locViewModel = LokacijaViewModel()
     private val firestore = FirebaseFirestore.getInstance()
     val storageService = StorageService(firestore)
-    private val ordViewModel = OrdinacijaViewModel(storageService)
+    private val ordViewModel = OrdinacijaViewModel(storageService,locViewModel)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

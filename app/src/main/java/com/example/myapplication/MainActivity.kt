@@ -24,6 +24,8 @@ import com.example.myapplication.view.AuthEkran
 import com.example.myapplication.viewmodel.AuthViewModel
 import com.example.myapplication.viewmodel.LokacijaViewModel
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
+import com.example.myapplication.viewmodel.RankingViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -32,8 +34,11 @@ class MainActivity : ComponentActivity() {
     private val authViewModel = AuthViewModel()
     private val locViewModel = LokacijaViewModel()
     private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
     val storageService = StorageService(firestore)
-    private val ordViewModel = OrdinacijaViewModel(storageService,locViewModel)
+    //private val fb = FirebaseFirestore
+    private val rankVM = RankingViewModel(firestore)
+    private val ordViewModel = OrdinacijaViewModel(storageService,locViewModel,auth,firestore)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +51,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                 AppNavigation(Modifier.padding(innerPadding), viewModel =  authViewModel,this,
-                    locViewModel, ordViewModel)
+                    locViewModel, ordViewModel,rankVM)
             }
         }
     }

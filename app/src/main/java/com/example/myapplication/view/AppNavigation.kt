@@ -11,10 +11,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.viewmodel.AuthViewModel
 import com.example.myapplication.viewmodel.LokacijaViewModel
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
+import com.example.myapplication.viewmodel.RankingViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier, viewModel: AuthViewModel,context: Context, viewModelLocation: LokacijaViewModel,viewModelOrdinacija: OrdinacijaViewModel) {
+fun AppNavigation(modifier: Modifier = Modifier,
+                  viewModel: AuthViewModel,context: Context, viewModelLocation: LokacijaViewModel,
+                  viewModelOrdinacija: OrdinacijaViewModel,viewmodelRank : RankingViewModel) {
     val navController = rememberNavController()
     val ulogovan = Firebase.auth.currentUser!=null
     val prvaStrana = if(ulogovan) "home" else "auth"
@@ -41,6 +44,9 @@ fun AppNavigation(modifier: Modifier = Modifier, viewModel: AuthViewModel,contex
         composable("ordinacija"){
             OrdinacijaEkran(modifier,viewModelOrdinacija,
             viewModelLocation)
+        }
+        composable("rank"){
+            RankingEkran(modifier,navController,viewmodelRank)
         }
     }
 

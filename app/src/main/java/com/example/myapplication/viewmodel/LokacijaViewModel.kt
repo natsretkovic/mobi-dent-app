@@ -2,7 +2,6 @@ package com.example.myapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.model.LokacijaKorisnika
-import com.example.myapplication.model.LokacijaOrdinacija
 import com.example.myapplication.model.Ordinacija
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore

@@ -1,5 +1,6 @@
 package com.example.myapplication.model
 
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
 
 data class Ordinacija(
@@ -12,4 +13,5 @@ data class Ordinacija(
     val ocena : Double =0.0,
     val komentar : String="",
     val latitude:Double =0.0,
-    val longitude:Double=0.0)
+    val longitude:Double=0.0,
+    val timestamp: Timestamp = Timestamp.now())

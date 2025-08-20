@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import com.example.myapplication.model.LokacijaKorisnika
 import com.example.myapplication.viewmodel.LokacijaViewModel
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -28,7 +27,7 @@ fun GoogleMapaEkran( viewModel: LokacijaViewModel,
                      uiSettings: MapUiSettings = MapUiSettings(),
 ) {
     val userLocation = viewModel.userLocation.collectAsState(initial = null)
-    val ordinacije = viewModel.mapOrdinacija.collectAsState(initial = emptyList())
+    val ordinacije = viewModel.listOrdinacija.collectAsState(initial = emptyList())
     //val markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.crveni_zub)
     GoogleMap(
         modifier = modifier.fillMaxSize(),
@@ -53,9 +52,8 @@ fun GoogleMapaEkran( viewModel: LokacijaViewModel,
                 state = rememberMarkerState(
                     position = LatLng(ordinacija.latitude, ordinacija.longitude)
                 ),
-                title = "Ordinacija $ordinacija.naziv",
-                snippet = "Lokacija"
-            )
+                title = "Ordinacija ${ordinacija.naziv}",
+        )
         }
     }
 }

@@ -24,7 +24,6 @@ class AuthViewModel : ViewModel() {
         prezime: String,
         brTelefona: String,
         username: String,
-        slikaUri: Uri?,
         onResult: (Boolean, String?) -> Unit,
 
         ) {

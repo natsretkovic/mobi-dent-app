@@ -33,16 +33,6 @@ class StorageService(private val firestore: FirebaseFirestore) {
     }
  //ocekuje listu koja nije prazna zato mapNotNull
 
- private suspend fun calculatePoints(ocena:Double, komentar:String) :Double{
-    var poeni =1.0;
-     if(ocena > 0.0)
-         poeni += 5
-     if(!komentar.isEmpty())
-         poeni+=5.0
-     if(komentar.length > 200)
-         poeni +=10.0
-     return poeni
- }
 
 
 

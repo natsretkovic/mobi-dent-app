@@ -36,7 +36,6 @@ class MainActivity : ComponentActivity() {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     val storageService = StorageService(firestore)
-    //private val fb = FirebaseFirestore
     private val rankVM = RankingViewModel(firestore)
     private val ordViewModel = OrdinacijaViewModel(storageService,locViewModel,auth,firestore)
 

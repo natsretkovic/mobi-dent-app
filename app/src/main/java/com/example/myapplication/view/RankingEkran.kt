@@ -22,7 +22,7 @@ import androidx.compose.runtime.setValue
 @Composable
 fun RankingEkran(modifier: Modifier, navContoller : NavHostController,
                  rankingViewModel: RankingViewModel = viewModel()) {
-    val rankList by rankingViewModel.rankList.collectAsState()
+    val rankList by rankingViewModel.list.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()

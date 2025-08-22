@@ -51,6 +51,9 @@ fun AppNavigation(modifier: Modifier = Modifier,
         composable("rank"){
             RankingEkran(modifier,navController,viewmodelRank)
         }
+        composable("filterOrd"){
+            FilterOrdinacijeEkran(viewModelOrdinacija)
+        }
     }
 
 }

@@ -112,6 +112,9 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewM
             }
 
             Spacer(modifier = Modifier.weight(1f))
+            Button(onClick = { navContoller.navigate("filterOrd") }) {
+                Text(text = "≡")
+            }
 
             Row(
                 modifier = Modifier

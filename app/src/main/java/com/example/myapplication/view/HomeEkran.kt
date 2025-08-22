@@ -113,9 +113,8 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewM
 
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = { navContoller.navigate("filterOrd") }) {
-                Text(text = "≡")
+                Text(text = "Filtriranje ordinacija")
             }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -136,62 +135,4 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewM
         }
     }
 }
-
-
-
-   /* Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ){
-        Column() {
-            Text("Ovo je home screen")
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                Firebase.auth.signOut()
-                navContoller.navigate("auth"){
-                    popUpTo("home"){
-                        inclusive = true
-                    }
-                }
-            }) {
-
-                Text("Odjavi se")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            val context = LocalContext.current
-
-            val locationPermissionLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (isGranted) {
-                } else {
-                    Toast.makeText(context, "Lokacija nije odobrena", Toast.LENGTH_SHORT).show()
-                }
-            }
-            Button(onClick = {
-                navContoller.navigate("map")
-            }){
-                Text("Klik za mapu")
-            }
-            Button(onClick = {
-                navContoller.navigate("trackLocation")
-            }){
-                Text("Klik za odobrenje")
-            }
-            Button(onClick = {
-                navContoller.navigate("ordinacija")
-            }){
-                Text("Upravljajte ordinacijom")
-            }
-            Button(onClick = {
-                navContoller.navigate("rank")
-            }){
-                Text("Pogledajte ranking")
-            }
-
-        }
-
-    }*/
 

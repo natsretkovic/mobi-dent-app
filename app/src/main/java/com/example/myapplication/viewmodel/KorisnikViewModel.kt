@@ -15,20 +15,32 @@ class KorisnikViewModel(private val service : KorisnikService,
                         private val auth: FirebaseAuth,
                         private val firestore: FirebaseFirestore) : ViewModel() {
 
-    private val userId = auth.currentUser!!.uid
+    //private val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
     private val user = MutableStateFlow<Korisnik?>(null)
     val korisnik: StateFlow<Korisnik?> = user.asStateFlow()
-    init{
-           getKorisnik()
-        }
-    fun getKorisnik(){
-        viewModelScope.launch {
-            try {
-                user.value = service.getKorisnik(userId)
-            } catch (e: Exception) {
-                println(e.toString())
-            }
 
+    private val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+        val currentUser = firebaseAuth.currentUser
+        if (currentUser != null) {
+            viewModelScope.launch {
+                try {
+                    user.value = service.getKorisnik(currentUser.uid)
+                } catch (e: Exception) {
+                    println(e.toString())
+                }
+            }
+        } else {
+            user.value = null
         }
     }
+    init {
+        auth.addAuthStateListener(listener)
+    }
+    override fun onCleared() {
+        super.onCleared()
+        auth.removeAuthStateListener(listener)
+    }
+
 }
+// bez stateFlow sa userId mozda null pada kad se pokrece, zato mora da se prati dal je ulogovan
+// ili kad se odjavi da ne padne

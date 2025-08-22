@@ -19,6 +19,7 @@ import com.example.myapplication.model.Ordinacija
 fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
     var searchText by remember { mutableStateOf("") }
     var ocena by remember { mutableStateOf(0.0) }
+    var radius by remember { mutableStateOf(0.0) }
 
     val filteredList by ordinacijaViewModel.ordinacijaFilter.collectAsState()
 
@@ -42,6 +43,11 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = {
+
+        }){
+            Text("Filter pomocu radiusa")
+        }
 
         LazyColumn(
             modifier = Modifier.fillMaxSize()

@@ -148,7 +148,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         }
     }
 }
-class PoiViewModelFactory(private val storageService: StorageService,
+/*class PoiViewModelFactory(private val storageService: StorageService,
     private val lokacijaViewModel: LokacijaViewModel,
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore): ViewModelProvider.Factory {
@@ -161,7 +161,7 @@ class PoiViewModelFactory(private val storageService: StorageService,
         }
         throw IllegalArgumentException("nepoznata ViewModel klasa")
     }
-}
+}*/
 
 
 

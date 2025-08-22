@@ -17,6 +17,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import com.example.myapplication.R
 import com.example.myapplication.model.Korisnik
+import com.example.myapplication.model.Ordinacija
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.catch
@@ -156,4 +157,5 @@ class LocationService() : Service() {
         val notificationId = 12345
         notificationManager.notify(notificationId, notificationBuilder.build())
     }
+
 }

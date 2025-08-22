@@ -21,6 +21,7 @@ class LokacijaViewModel() : ViewModel() {
     val listOrdinacija: StateFlow<List<Ordinacija>> = listOrd
     private val nearbyList = MutableStateFlow<List<Korisnik>>(emptyList())
     val nearbyUserList: StateFlow<List<Korisnik>> = nearbyList
+
     private var listenerRegistration: ListenerRegistration? = null
     private var objectListenerRegistration: ListenerRegistration? = null
     private var nearListenerRegistration: ListenerRegistration? = null
@@ -61,6 +62,22 @@ class LokacijaViewModel() : ViewModel() {
                 }
         }
     }
-
+    fun getOrdinacijaRadius(radius : Double) : List<Ordinacija> {
+        val userLocation = userLoc.value
+        if(userLocation==null){
+            return emptyList()
+        }
+       val lista =  listOrd.value.filter { ordinacija ->
+            calculateDistance(userLocation.latitude, userLocation.longitude,
+                                ordinacija.latitude, ordinacija.longitude) < radius
+        }
+        return lista
+    }
+    private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
+        val results = FloatArray(1)
+        Location.distanceBetween(lat1, lon1, lat2, lon2, results)
+        return results[0]
+    }
 
 }
+

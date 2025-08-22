@@ -139,25 +139,15 @@ class LocationService() : Service() {
 
         if (nearbyUsers.isNotEmpty()) {
             val firstNearbyUser = nearbyUsers.first()
-                 showNotification(firstNearbyUser.ime.toString())
+                showNotification(firstNearbyUser.ime.toString())
         }
     }
     private fun showNotification(userName: String) {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "channel"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Obavestenje o blizini",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Obavesti kada su drugi korisnici u blizini"
-            }
-            notificationManager.createNotificationChannel(channel)
-        }
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Zamijeni s ikonom
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Korisnik u blizini!")
             .setContentText("$userName je u blizini.")
             .setPriority(NotificationCompat.PRIORITY_HIGH)

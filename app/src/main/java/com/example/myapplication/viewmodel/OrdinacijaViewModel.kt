@@ -8,6 +8,7 @@ import com.example.myapplication.model.Ordinacija
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -145,6 +146,20 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         } else {
             println("Greška: Korisnik nije ulogovan. Poeni nisu dodati.")
         }
+    }
+}
+class PoiViewModelFactory(private val storageService: StorageService,
+    private val lokacijaViewModel: LokacijaViewModel,
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore): ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(OrdinacijaViewModel::class.java)) {
+            return OrdinacijaViewModel(storageService,
+                                        lokacijaViewModel,
+                                        auth,
+                                         firestore) as T
+        }
+        throw IllegalArgumentException("nepoznata ViewModel klasa")
     }
 }
 

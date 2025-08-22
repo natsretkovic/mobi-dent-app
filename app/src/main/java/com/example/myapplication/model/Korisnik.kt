@@ -9,7 +9,7 @@ data class Korisnik(
     val brojTelefona: String = "",
     val username: String="",
     val email : String="",
-    //val profilnaSlikaUrl : String? = null,
+   // val profilnaSlikaUrl : String? = null,
     val poeni: Int = 0,
     val rank: Int =0,
     val latitude: Double = 0.0,

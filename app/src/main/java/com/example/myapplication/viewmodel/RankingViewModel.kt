@@ -14,6 +14,7 @@ import kotlinx.coroutines.tasks.await
 class RankingViewModel(private val firestore: FirebaseFirestore) : ViewModel() {
     private val rankList = MutableStateFlow<List<Korisnik>>(emptyList())
     val list: StateFlow<List<Korisnik>> = rankList
+    val ranklist: StateFlow<List<Korisnik>> = rankList
     init{
         getAllUsers()
     }

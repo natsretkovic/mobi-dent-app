@@ -22,6 +22,7 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.view.AppNavigation
 import com.example.myapplication.view.AuthEkran
 import com.example.myapplication.viewmodel.AuthViewModel
+import com.example.myapplication.viewmodel.KorisnikViewModel
 import com.example.myapplication.viewmodel.LokacijaViewModel
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 import com.example.myapplication.viewmodel.RankingViewModel
@@ -36,8 +37,10 @@ class MainActivity : ComponentActivity() {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     val storageService = StorageService(firestore)
+    val korisnikService = KorisnikService(auth,firestore)
     private val rankVM = RankingViewModel(firestore)
     private val ordViewModel = OrdinacijaViewModel(storageService,locViewModel,auth,firestore)
+    private val korisnikViewModel = KorisnikViewModel(korisnikService,auth,firestore)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +53,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                 AppNavigation(Modifier.padding(innerPadding), viewModel =  authViewModel,this,
-                    locViewModel, ordViewModel,rankVM)
+                    locViewModel, ordViewModel,rankVM, korisnikViewModel)
             }
         }
     }

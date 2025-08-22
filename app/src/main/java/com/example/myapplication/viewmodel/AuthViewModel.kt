@@ -24,6 +24,7 @@ class AuthViewModel : ViewModel() {
         prezime: String,
         brTelefona: String,
         username: String,
+        //slikaUri :Uri?,
         onResult: (Boolean, String?) -> Unit,
 
         ) {
@@ -36,17 +37,14 @@ class AuthViewModel : ViewModel() {
                 val userCredential =
                     auth.createUserWithEmailAndPassword(email, password).await()
                 val userId = userCredential.user?.uid ?: throw IllegalStateException("User ID not found.")
-               /* val slikaUrl: String? = if (slikaUri != null) {
+               /* val slikaUrl: String? = slikaUri?.let { uri ->
                     val storageRef = storage.reference.child("profilna_slika/${userId}.jpg")
-                        storageRef.putFile(slikaUri).await()
-                        storageRef.downloadUrl.await().toString()
-                    } else {
-                        null
-                    }
-                    *\
-                */
+                    storageRef.putFile(uri).await()
+                    storageRef.downloadUrl.await().toString()
+                }*/
                     val korisnik = Korisnik(ime, prezime, brTelefona, username, email)
                     db.collection("korisnici").document(userId).set(korisnik).await()
+                onResult(true, "Super!")
             } catch (e: Exception) {
                 onResult(false, e.localizedMessage ?: "Došlo je do greške.")
             }

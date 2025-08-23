@@ -2,10 +2,15 @@ package com.example.myapplication.view
 
 import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.myapplication.R
 import com.example.myapplication.viewmodel.LokacijaViewModel
@@ -33,6 +39,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import androidx.core.graphics.scale
 import com.example.myapplication.model.Ordinacija
+import com.example.myapplication.viewmodel.OrdinacijaViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.Circle
 
@@ -40,6 +47,7 @@ import com.google.maps.android.compose.Circle
 @Composable
 fun GoogleMapaEkran(
     viewModel: LokacijaViewModel,
+    viewModelOrdinacija: OrdinacijaViewModel,
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(43.321445, 21.896104), 12f)
@@ -49,15 +57,19 @@ fun GoogleMapaEkran(
 ) {
     val userLocation = viewModel.userLocation.collectAsState(initial = null)
     val ordinacije = viewModel.listOrdinacija.collectAsState(initial = emptyList())
+    val filteredOrdinacije = viewModelOrdinacija.ordinacijaFilter.collectAsState(emptyList())
     var showOrdinacijeRadius by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf("") }
 
-    val ordinacijeZaPrikaz : List<Ordinacija>
-        if (showOrdinacijeRadius) {
-        ordinacijeZaPrikaz = viewModel.getOrdinacijaRadius(1000.0) // 1 km
+    var ordinacijeZaPrikaz : List<Ordinacija>
+    if (showOrdinacijeRadius) {
+        ordinacijeZaPrikaz = viewModel.getOrdinacijaRadius(1000.0)
+    } else if (searchText.isNotBlank()) {
+        ordinacijeZaPrikaz = viewModelOrdinacija.ordinacijaFilter.value
     } else {
-        ordinacijeZaPrikaz=ordinacije.value
+        ordinacijeZaPrikaz = ordinacije.value
     }
-    LaunchedEffect(userLocation.value) {
+    /*LaunchedEffect(userLocation.value) {
         userLocation.value?.let { loc ->
             val newPosition = LatLng(loc.latitude, loc.longitude)
             cameraPositionState.animate(
@@ -67,9 +79,20 @@ fun GoogleMapaEkran(
                 durationMs = 1000
             )
         }
-    }
+    }*/
 
-    Box(modifier= Modifier.fillMaxSize()) {
+    Column(modifier= Modifier.fillMaxSize()) {
+        TextField(
+            value = searchText,
+            onValueChange = {
+                searchText = it
+                viewModelOrdinacija.filterOrdinacija(it)
+
+            },
+            label = { Text("Pretraži po nazivu, doktoru ili proceduri") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         GoogleMap(
             modifier = modifier.fillMaxHeight(0.8f),
             cameraPositionState = cameraPositionState,
@@ -117,7 +140,6 @@ fun GoogleMapaEkran(
                 }
             }
 
-
         }
         Button(
             onClick = {
@@ -127,7 +149,7 @@ fun GoogleMapaEkran(
                       else{
                           showOrdinacijeRadius=false
                       }},
-            modifier = Modifier.align(Alignment.TopCenter)
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             if(showOrdinacijeRadius) {
                 Text("Obican prikaz")

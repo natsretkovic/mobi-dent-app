@@ -1,5 +1,6 @@
 package com.example.myapplication.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -15,14 +16,21 @@ import com.example.myapplication.viewmodel.OrdinacijaViewModel
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
 import com.example.myapplication.model.Ordinacija
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
     var searchText by remember { mutableStateOf("") }
     var ocena by remember { mutableStateOf(0.0) }
-    var radius by remember { mutableStateOf(0.0) }
+    var pocetniDatum by remember { mutableStateOf<Date?>(null) }
+    var krajnjiDatum by remember { mutableStateOf<Date?>(null) }
+    var showStartDatePicker by remember { mutableStateOf(false) }
+    var showEndDatePicker by remember { mutableStateOf(false) }
 
     val filteredList by ordinacijaViewModel.ordinacijaFilter.collectAsState()
+    val formatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
     Box( modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center) {
@@ -42,17 +50,32 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
             onValueChange = {
                 searchText = it
                 ordinacijaViewModel.filterOrdinacija(it)
+
             },
             label = { Text("Pretraži po nazivu, doktoru ili proceduri") },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
+        Slider(
+            value = ocena.toFloat(),
+            onValueChange = {
+                ocena = it.toDouble()
+                ordinacijaViewModel.filterOrdinacijaByOcena(ocena)
+            },
+            valueRange = 0f..5f,
+            steps =9,
+            modifier = Modifier.fillMaxWidth()
+        )
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(filteredList) { ordinacija ->
-                OrdinacijaCard(ordinacija)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if(searchText.isNotBlank() || ocena>0.0) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(filteredList) { ordinacija ->
+                    OrdinacijaCard(ordinacija)
+                }
             }
         }
     }

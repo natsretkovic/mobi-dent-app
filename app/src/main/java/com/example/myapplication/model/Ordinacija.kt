@@ -2,6 +2,7 @@ package com.example.myapplication.model
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
+import java.util.Date
 
 data class Ordinacija(
     @DocumentId
@@ -14,4 +15,4 @@ data class Ordinacija(
     val komentar : String="",
     val latitude:Double =0.0,
     val longitude:Double=0.0,
-    val timestamp: Timestamp = Timestamp.now())
+    val timestamp: Date = Date())

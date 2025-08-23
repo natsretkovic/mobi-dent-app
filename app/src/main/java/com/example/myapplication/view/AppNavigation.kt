@@ -52,16 +52,30 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
         composable("map"){
             val viewModelLocation: LokacijaViewModel = viewModel()
-            GoogleMapaEkran(viewModelLocation)
+            val ordinacijaViewModel: OrdinacijaViewModel = viewModel(
+                factory = OrdinacijaViewModelFactory(
+                    storageService,
+                    viewModelLocation,
+                    auth,
+                    firestore
+                ))
+            GoogleMapaEkran(viewModelLocation,ordinacijaViewModel)
         }
         composable("trackLocation"){
             PratiLokaciju(context)
         }
         composable("ordinacija"){
-            val ordinacijaViewModel: OrdinacijaViewModel = viewModel()
             val lokacijaViewModel: LokacijaViewModel = viewModel()
+            val ordinacijaViewModel: OrdinacijaViewModel = viewModel(
+                factory = OrdinacijaViewModelFactory(
+                    storageService,
+                    lokacijaViewModel,
+                    auth,
+                    firestore
+                )
+            )
             OrdinacijaEkran(modifier,ordinacijaViewModel,
-            lokacijaViewModel)
+                lokacijaViewModel)
         }
         composable("rank"){
             val korisnikViewModel: KorisnikViewModel = viewModel(

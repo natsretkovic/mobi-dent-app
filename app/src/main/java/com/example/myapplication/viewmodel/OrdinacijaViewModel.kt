@@ -15,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 
 class OrdinacijaViewModel(private val storageService: StorageService,private val lokacijaViewModel: LokacijaViewModel,
                           private val auth: FirebaseAuth,
@@ -115,6 +116,28 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
             fOrdinacija.value = result
         }
     }
+    fun filterOrdinacijaByOcena(ocena : Double){
+        val ocenaDouble = "%.1f".format(ocena)
+        viewModelScope.launch {
+            val allOrdinacije = storageService.getAllOrdinacije()
+            val result = allOrdinacije.filter {ordinacija ->
+                val ordinacijaOcena = "%.1f".format(ordinacija.ocena)
+                ordinacijaOcena == ocenaDouble
+            }
+            fOrdinacija.value=result
+        }
+    }
+    fun filterOrdinacijaByDatum(pocetniDatum : Date, krajnjiDatum : Date){
+        viewModelScope.launch {
+            var allOrdinacije = storageService.getAllOrdinacije()
+            var result = allOrdinacije.filter { ordinacije ->
+                (ordinacije.timestamp >= pocetniDatum) &&
+                        (ordinacije.timestamp <=krajnjiDatum)
+            }
+                fOrdinacija.value = result
+        }
+    }
+
 
     private fun checkOcena(ocena: Double): Double {
         if (ocena > 5.0)

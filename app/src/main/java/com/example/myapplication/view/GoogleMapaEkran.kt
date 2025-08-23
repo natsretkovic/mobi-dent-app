@@ -3,12 +3,16 @@ package com.example.myapplication.view
 import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -23,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.myapplication.R
@@ -60,12 +65,14 @@ fun GoogleMapaEkran(
     val filteredOrdinacije = viewModelOrdinacija.ordinacijaFilter.collectAsState(emptyList())
     var showOrdinacijeRadius by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
+    var inputRadiusText by remember { mutableStateOf("") }
+    var inputRadius by remember { mutableStateOf(0.0) }
 
     var ordinacijeZaPrikaz : List<Ordinacija>
     if (showOrdinacijeRadius) {
-        ordinacijeZaPrikaz = viewModel.getOrdinacijaRadius(1000.0)
+        ordinacijeZaPrikaz = viewModel.getOrdinacijaRadius(inputRadius)
     } else if (searchText.isNotBlank()) {
-        ordinacijeZaPrikaz = viewModelOrdinacija.ordinacijaFilter.value
+        ordinacijeZaPrikaz = filteredOrdinacije.value
     } else {
         ordinacijeZaPrikaz = ordinacije.value
     }
@@ -118,7 +125,7 @@ fun GoogleMapaEkran(
                 if (showOrdinacijeRadius) {
                     Circle(
                         center = userLatLng,
-                        radius = 1000.0,
+                        radius = inputRadius,
                         strokeColor = Color.Black,
                         strokeWidth = 3f,
                     )
@@ -141,23 +148,39 @@ fun GoogleMapaEkran(
             }
 
         }
-        Button(
-            onClick = {
-                if(!showOrdinacijeRadius) {
-                    showOrdinacijeRadius = true
-                }
-                      else{
-                          showOrdinacijeRadius=false
-                      }},
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(3.dp).align(Alignment.End),
         ) {
-            if(showOrdinacijeRadius) {
-                Text("Obican prikaz")
-            }
-            else {
-                Text("Filtrijaj po radijusu")
-            }
+            Button(
+                onClick = {
+                    if (!showOrdinacijeRadius) {
+                        showOrdinacijeRadius = true
+                    } else {
+                        showOrdinacijeRadius = false
+                    }
+                },
+               // modifier = Modifier.align(Alignment.Bottom)
+            ) {
+                if (showOrdinacijeRadius) {
+                    Text("Obican prikaz")
+                } else {
+                    Text("Filtrijaj po radijusu")
+                }
 
+            }
+            TextField(
+                value = inputRadiusText,
+                onValueChange = { txt ->
+                    if (txt.all { it.isDigit() }) {
+                        inputRadiusText = txt
+                        inputRadius = txt.toDoubleOrNull()?.times(1000) ?: 0.0
+                    }
+                },
+                label = { Text("Unesite radijus") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

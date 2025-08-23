@@ -114,7 +114,7 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewM
             Row(
                 modifier=Modifier.fillMaxWidth().padding(8.dp)
             ) {
-                Button(onClick = { navContoller.navigate("filterOrd") }) {
+                Button(onClick = { navContoller.navigate("filterOrd")}) {
                     Text(text = "Filtriranje ordinacija")
                 }
                 Button(onClick = { navContoller.navigate("allOrd") }) {

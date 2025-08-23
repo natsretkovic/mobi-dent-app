@@ -138,9 +138,8 @@ class LocationService() : Service() {
                     ) < 30
         }
 
-        if (nearbyUsers.isNotEmpty()) {
-            val firstNearbyUser = nearbyUsers.first()
-                showNotification(firstNearbyUser.ime.toString())
+        nearbyUsers.forEach { user ->
+            showNotification(user.ime.toString())
         }
     }
     private fun showNotification(userName: String) {

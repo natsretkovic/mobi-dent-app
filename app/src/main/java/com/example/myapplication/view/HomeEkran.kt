@@ -110,10 +110,16 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewM
                     Text(text = "Odjavi se")
                 }
             }
-
             Spacer(modifier = Modifier.weight(1f))
-            Button(onClick = { navContoller.navigate("filterOrd") }) {
-                Text(text = "Filtriranje ordinacija")
+            Row(
+                modifier=Modifier.fillMaxWidth().padding(8.dp)
+            ) {
+                Button(onClick = { navContoller.navigate("filterOrd") }) {
+                    Text(text = "Filtriranje ordinacija")
+                }
+                Button(onClick = { navContoller.navigate("allOrd") }) {
+                    Text(text = "Sve ordinacije")
+                }
             }
             Row(
                 modifier = Modifier

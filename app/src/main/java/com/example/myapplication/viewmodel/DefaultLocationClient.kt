@@ -26,13 +26,13 @@ class DefaultLocationClient(
 
         return callbackFlow {
             if(!context.hasLocationPermission()){
-                throw LocationClient.LocationException("Nedotsaje dozvola o lokaciji")
+                throw LocationClient.LocationException("Nedostaje dozvola o lokaciji")
             }
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
             val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
             if(!isGpsEnabled && !isNetworkEnabled ){
-                throw LocationClient.LocationException("Nisu dozvoljen gps")
+                throw LocationClient.LocationException("Nije dozvoljen gps")
             }
             val request = LocationRequest.Builder(interval).build()
             val locationCallback = object : LocationCallback(){

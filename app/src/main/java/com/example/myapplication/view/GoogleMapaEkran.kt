@@ -129,7 +129,7 @@ fun GoogleMapaEkran(
                       }},
             modifier = Modifier.align(Alignment.TopCenter)
         ) {
-            if(!showOrdinacijeRadius) {
+            if(showOrdinacijeRadius) {
                 Text("Obican prikaz")
             }
             else {

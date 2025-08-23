@@ -2,12 +2,7 @@ package com.example.myapplication.view
 
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -17,13 +12,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
@@ -33,8 +24,7 @@ import java.util.UUID
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-//import coil.compose.rememberImagePainter
-import androidx.compose.foundation.Image
+import coil.compose.AsyncImage
 
 
 @Composable
@@ -113,14 +103,13 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
 
             )
             Spacer(modifier = Modifier.height(16.dp))
-            /*slikaUri?.let { uri ->
-                Image(
-                    painter = rememberImagePainter(data = uri),
+            slikaUri?.let { uri ->
+                AsyncImage(
+                    model = uri,
                     contentDescription = "Profilna slika",
-                    modifier = Modifier
-                        .size(120.dp)
+                    modifier = Modifier.size(120.dp)
                 )
-            }*/
+            }
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -150,7 +139,7 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
                     prezime,
                     brTelefona,
                     username,
-                    //sslikaUri
+                    slikaUri
                 ) { success, errorMessage ->
                     if (success) {
                         message = "Registracija je uspesna!"

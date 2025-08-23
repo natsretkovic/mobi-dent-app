@@ -11,6 +11,8 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.auth.FirebaseUser
+
 
 class AuthViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
@@ -24,7 +26,7 @@ class AuthViewModel : ViewModel() {
         prezime: String,
         brTelefona: String,
         username: String,
-        //slikaUri :Uri?,
+        slikaUri :Uri?,
         onResult: (Boolean, String?) -> Unit,
 
         ) {
@@ -36,13 +38,15 @@ class AuthViewModel : ViewModel() {
                 }
                 val userCredential =
                     auth.createUserWithEmailAndPassword(email, password).await()
-                val userId = userCredential.user?.uid ?: throw IllegalStateException("User ID not found.")
-               /* val slikaUrl: String? = slikaUri?.let { uri ->
+                val user: FirebaseUser = userCredential.user ?: throw IllegalStateException("User not found")
+                val userId: String = user.uid
+
+                val slikaUrl: String? = slikaUri?.let { uri ->
                     val storageRef = storage.reference.child("profilna_slika/${userId}.jpg")
                     storageRef.putFile(uri).await()
                     storageRef.downloadUrl.await().toString()
-                }*/
-                    val korisnik = Korisnik(ime, prezime, brTelefona, username, email)
+                }
+                    val korisnik = Korisnik(ime, prezime, brTelefona, username, email,slikaUrl)
                     db.collection("korisnici").document(userId).set(korisnik).await()
                 onResult(true, "Super!")
             } catch (e: Exception) {

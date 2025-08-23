@@ -67,7 +67,7 @@ fun OrdinacijaEkran(
                 label = { Text("Ocena") })
             Button(
                 onClick = {
-                    viewModel.addOrdinacija(
+                    viewModel.addOrdinacijaTest(
                         naziv,
                         doktor,
                         procedura,

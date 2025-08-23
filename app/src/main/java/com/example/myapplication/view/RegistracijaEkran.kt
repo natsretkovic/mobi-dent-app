@@ -33,7 +33,7 @@ import java.util.UUID
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import coil.compose.rememberImagePainter
+//import coil.compose.rememberImagePainter
 import androidx.compose.foundation.Image
 
 
@@ -113,14 +113,14 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
 
             )
             Spacer(modifier = Modifier.height(16.dp))
-            slikaUri?.let { uri ->
+            /*slikaUri?.let { uri ->
                 Image(
                     painter = rememberImagePainter(data = uri),
                     contentDescription = "Profilna slika",
                     modifier = Modifier
                         .size(120.dp)
                 )
-            }
+            }*/
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()

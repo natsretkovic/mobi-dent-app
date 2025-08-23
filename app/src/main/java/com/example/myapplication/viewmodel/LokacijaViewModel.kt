@@ -69,7 +69,7 @@ class LokacijaViewModel() : ViewModel() {
         }
        val lista =  listOrd.value.filter { ordinacija ->
             calculateDistance(userLocation.latitude, userLocation.longitude,
-                                ordinacija.latitude, ordinacija.longitude) < radius
+                                ordinacija.latitude, ordinacija.longitude) <= radius
         }
         return lista
     }

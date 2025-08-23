@@ -27,15 +27,17 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     private val fOrdinacija = MutableStateFlow<List<Ordinacija>>(emptyList())
     val ordinacijaFilter: StateFlow<List<Ordinacija>> = fOrdinacija
 
-    var selectedOrdinacija: Ordinacija by mutableStateOf(Ordinacija())
-        private set
 
-    fun setCurrentOrdinacija(ordinacija: Ordinacija) {
+   /* fun setCurrentOrdinacija(ordinacija: Ordinacija) {
         selectedOrdinacija = ordinacija
     }
 
     fun resetCurrentOrdinacija() {
         selectedOrdinacija = Ordinacija()
+    }*/
+
+    init{
+        listOrdinacija()
     }
 
     fun addOrdinacija(
@@ -148,7 +150,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         }
     }
 }
-/*class PoiViewModelFactory(private val storageService: StorageService,
+class OrdinacijaViewModelFactory(private val storageService: StorageService,
     private val lokacijaViewModel: LokacijaViewModel,
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore): ViewModelProvider.Factory {
@@ -161,15 +163,5 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         }
         throw IllegalArgumentException("nepoznata ViewModel klasa")
     }
-}*/
+}
 
-
-
-    /*val id : String = "",
-    val naziv: String = "",
-    val doktor : String="",
-    val procedura : String = "",
-    val ocena : Double =0.0,
-    val komentar : String="",
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0)    */

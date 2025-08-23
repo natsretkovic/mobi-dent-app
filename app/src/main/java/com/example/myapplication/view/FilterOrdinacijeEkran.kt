@@ -13,6 +13,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.Modifier
 import com.example.myapplication.model.Ordinacija
 
 @Composable
@@ -22,6 +23,9 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
     var radius by remember { mutableStateOf(0.0) }
 
     val filteredList by ordinacijaViewModel.ordinacijaFilter.collectAsState()
+
+    Box( modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center) {
 
     Column(
         modifier = Modifier
@@ -43,11 +47,6 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-
-        }){
-            Text("Filter pomocu radiusa")
-        }
 
         LazyColumn(
             modifier = Modifier.fillMaxSize()
@@ -57,6 +56,7 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
             }
         }
     }
+}
 }
     @Composable
     fun OrdinacijaCard(ordinacija: Ordinacija) {

@@ -1,6 +1,9 @@
 package com.example.myapplication.view
 
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +23,15 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun AuthEkran(modifier: Modifier = Modifier, navController: NavHostController) {
+    val context = LocalContext.current
+    /*val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+        } else {
+            Toast.makeText(context, "Lokacija nije odobrena", Toast.LENGTH_SHORT).show()
+        }
+    }*/
 
     Column(
         modifier = Modifier

@@ -8,6 +8,8 @@ import com.example.myapplication.model.Ordinacija
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
 
 class KorisnikService(private val auth: FirebaseAuth,
@@ -15,6 +17,7 @@ class KorisnikService(private val auth: FirebaseAuth,
 {
     //private val userId = auth.currentUser?.uid
     private val collectionName="korisnici"
+
 
     suspend fun getKorisnik(id:String): Korisnik? {
         if(id==null){
@@ -31,5 +34,10 @@ class KorisnikService(private val auth: FirebaseAuth,
         val newkorisnik = Korisnik(ime,prezime,brojTelefona)
         val snapshot = firestore.collection(collectionName).document(id)
             .set(newkorisnik, SetOptions.merge()).await()
+    }
+    suspend fun getAllUsers() : List<Korisnik>{
+        val snapshot = firestore.collection(collectionName).get().await()
+        val ret = snapshot.documents.mapNotNull { it.toObject(Korisnik::class.java) }
+        return ret
     }
 }

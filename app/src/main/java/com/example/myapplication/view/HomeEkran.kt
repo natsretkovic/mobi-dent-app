@@ -96,6 +96,13 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewM
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = { navContoller.navigate("editordinacije") },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Upravljaj dodatim ordinacijama")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedButton(
                     onClick = {
                         Firebase.auth.signOut()

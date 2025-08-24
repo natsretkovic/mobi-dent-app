@@ -2,6 +2,7 @@ package com.example.myapplication.viewmodel
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.model.Korisnik
@@ -28,7 +29,6 @@ class AuthViewModel : ViewModel() {
         username: String,
         slikaUri :Uri?,
         onResult: (Boolean, String?) -> Unit,
-
         ) {
         viewModelScope.launch {
             try {
@@ -40,7 +40,6 @@ class AuthViewModel : ViewModel() {
                     auth.createUserWithEmailAndPassword(email, password).await()
                 val user: FirebaseUser = userCredential.user ?: throw IllegalStateException("User not found")
                 val userId: String = user.uid
-
                 val slikaUrl: String? = slikaUri?.let { uri ->
                     val storageRef = storage.reference.child("profilna_slika/${userId}.jpg")
                     storageRef.putFile(uri).await()

@@ -39,6 +39,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
 
     init{
         listOrdinacija()
+        getOrdinacijeFromUser(auth.currentUser?.uid)
     }
 
     fun addOrdinacija(
@@ -89,55 +90,100 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
             ocena = checkOcena(ocena),
             komentar = komentar
         )
-        viewModelScope.launch { storageService.update(ord) }
+        viewModelScope.launch {
+            try {
+                storageService.update(ord)
+            }
+            catch(e : Exception){
+                println("Greska: ${e.message}")
+            }
+        }
     }
 
     fun deleteOrdinacija(id: String) {
-        if (id.isNotEmpty())
-            viewModelScope.launch {
-                storageService.delete(id)
-            }
+        try {
+            if (id.isNotEmpty())
+                viewModelScope.launch {
+                    storageService.delete(id)
+                }
+        }
+        catch(e : Exception){
+            println("Greska: ${e.message}")
+        }
     }
 
     fun listOrdinacija() {
         viewModelScope.launch {
-            ordinacijaList.value = storageService.getAllOrdinacije()
+            try {
+                ordinacijaList.value = storageService.getAllOrdinacije()
+            }
+            catch(e : Exception){
+                println("Greska: ${e.message}")
+            }
         }
     }
 
     fun filterOrdinacija(atribute: String) {
         val atributelowcase = atribute.lowercase()
         viewModelScope.launch {
-            val result = storageService.getAllOrdinacije().filter { ordinacija ->
-                ordinacija.naziv.lowercase().contains(atributelowcase) ||
-                        ordinacija.doktor.lowercase().contains(atributelowcase) ||
-                        ordinacija.procedura.lowercase().contains(atributelowcase)
+            try {
+                val result = storageService.getAllOrdinacije().filter { ordinacija ->
+                    ordinacija.naziv.lowercase().contains(atributelowcase) ||
+                            ordinacija.doktor.lowercase().contains(atributelowcase) ||
+                            ordinacija.procedura.lowercase().contains(atributelowcase)
+                }
+                fOrdinacija.value = result
             }
-            fOrdinacija.value = result
+            catch(e : Exception){
+                println("Greska: ${e.message}")
+            }
         }
     }
     fun filterOrdinacijaByOcena(ocena : Double){
         val ocenaDouble = "%.1f".format(ocena)
         viewModelScope.launch {
-            val allOrdinacije = storageService.getAllOrdinacije()
-            val result = allOrdinacije.filter {ordinacija ->
-                val ordinacijaOcena = "%.1f".format(ordinacija.ocena)
-                ordinacijaOcena == ocenaDouble
+            try {
+                val allOrdinacije = storageService.getAllOrdinacije()
+                val result = allOrdinacije.filter { ordinacija ->
+                    val ordinacijaOcena = "%.1f".format(ordinacija.ocena)
+                    ordinacijaOcena == ocenaDouble
+                }
+                fOrdinacija.value = result
+            }catch(e : Exception){
+                println("Greska: ${e.message}")
             }
-            fOrdinacija.value=result
+
         }
     }
     fun filterOrdinacijaByDatum(pocetniDatum : Date, krajnjiDatum : Date){
         viewModelScope.launch {
-            var allOrdinacije = storageService.getAllOrdinacije()
-            var result = allOrdinacije.filter { ordinacije ->
-                (ordinacije.timestamp >= pocetniDatum) &&
-                        (ordinacije.timestamp <=krajnjiDatum)
-            }
+            try {
+                var allOrdinacije = storageService.getAllOrdinacije()
+                var result = allOrdinacije.filter { ordinacije ->
+                    (ordinacije.timestamp >= pocetniDatum) &&
+                            (ordinacije.timestamp <= krajnjiDatum)
+                }
                 fOrdinacija.value = result
+            }
+            catch(e : Exception){
+                println("Greska: ${e.message}")
+            }
         }
     }
-
+    fun getOrdinacijeFromUser(userId : String?){
+        viewModelScope.launch {
+            try {
+                var allOrdinacije = storageService.getAllOrdinacije()
+                var result = allOrdinacije.filter { ordinacije ->
+                    (ordinacije.userId == userId)
+                }
+                fOrdinacija.value = result
+            }
+            catch(e : Exception){
+                println("Greska: ${e.message}")
+            }
+        }
+    }
 
     private fun checkOcena(ocena: Double): Double {
         if (ocena > 5.0)

@@ -139,12 +139,12 @@ class LocationService() : Service() {
         }
 
         nearbyUsers.forEach { user ->
-            showNotification(user.ime.toString())
+            showNotification(user.ime)
         }
     }
     private fun showNotification(userName: String) {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = "channel"
+        val channelId = "nearbyuserchannel"
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)

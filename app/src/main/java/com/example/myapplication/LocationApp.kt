@@ -14,7 +14,7 @@ class LocationApp : Application() {
                 NotificationChannel("location", "location", NotificationManager.IMPORTANCE_LOW)
 
             val nearbyUsersChannel =
-                NotificationChannel("channel", "Obavestenje o blizini", NotificationManager.IMPORTANCE_HIGH)
+                NotificationChannel("nearbyuserchannel", "Obavestenje o blizini", NotificationManager.IMPORTANCE_HIGH)
 
             var notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

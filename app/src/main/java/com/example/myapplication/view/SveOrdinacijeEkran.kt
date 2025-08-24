@@ -47,23 +47,8 @@ fun SveOrdinacijeEkran(modifier: Modifier, ordinacijeViewModel : OrdinacijaViewM
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(sveOrdinacije.value) { ordinacija ->
-                    OrdinacijaDiv(ordinacija)
+                    OrdinacijaCard(ordinacija)
                 }
             }
         }
     }
-@Composable
-fun OrdinacijaDiv(ordinacija: Ordinacija) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(text = "Naziv: ${ordinacija.naziv}", style = MaterialTheme.typography.titleMedium)
-        }
-    }
-}

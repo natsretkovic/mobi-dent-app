@@ -14,9 +14,9 @@ import androidx.compose.ui.unit.dp
 import com.example.myapplication.model.Ordinacija
 
 @Composable
-fun OrdinacijaCard(ordinacija: Ordinacija,modifier: Modifier = Modifier) {
+fun OrdinacijaCard(ordinacija: Ordinacija, modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -24,11 +24,10 @@ fun OrdinacijaCard(ordinacija: Ordinacija,modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = "Naziv: ${ordinacija.naziv}", style = MaterialTheme.typography.titleMedium)
-            Text(text = "Doktor: ${ordinacija.doktor}", style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Procedura: ${ordinacija.procedura}", style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Ocena: ${String.format("%.1f", ordinacija.ocena)}", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = "Naziv: ${ordinacija.naziv}",
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
-
 }

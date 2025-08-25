@@ -9,6 +9,8 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModelProvider
+import com.example.myapplication.model.Komentar
+import com.example.myapplication.model.Ocena
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -47,25 +49,32 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         doktor: String,
         procedura: String,
         ocena: Double,
-        komentar: String
+        text: String
+       // onResult: (String, Boolean) -> Unit()
     ) {
         val trenutnaLokacija = lokacijaViewModel.userLocation.value
         if (trenutnaLokacija != null) {
-
-            val novaOrdinacija = Ordinacija(
-                naziv = naziv,
+              val novaOrdinacija =  Ordinacija(
+                    naziv = naziv,
+                    latitude = trenutnaLokacija.latitude,
+                    longitude = trenutnaLokacija.longitude
+                )
+            val noviKomentar = Komentar(
+                tekst = text,
                 doktor = doktor,
-                procedura = procedura,
-                ocena = checkOcena(ocena),
-                komentar = komentar,
-                latitude = trenutnaLokacija.latitude,
-                longitude = trenutnaLokacija.longitude
+                procedura = procedura
+            )
+            val novaOcena = Ocena(
+                vrednost = checkOcena(ocena)
             )
             viewModelScope.launch {
                 try {
-                    storageService.save(novaOrdinacija)
+                   val id = storageService.save(novaOrdinacija)
+                    storageService.saveKomentar(id,noviKomentar)
+                    storageService.saveOcena(id,novaOcena)
                     println("Ordinacija uspešno dodata.")
-                    addPoints(ocena, komentar)
+
+                    addPoints(ocena, text)
 
                 } catch (e: Exception) {
                     println("Greška: ${e.message}")
@@ -77,6 +86,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     }
 
     fun updateOrdinacija(
+        id: String,
         naziv: String,
         doktor: String,
         procedura: String,
@@ -85,10 +95,10 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     ) {
         val ord = Ordinacija(
             naziv = naziv,
-            doktor = doktor,
-            procedura = procedura,
-            ocena = checkOcena(ocena),
-            komentar = komentar
+          // doktor = null.add(doktor),
+           // procedura = null.add(procedura),
+            //ocena = null.add(ocena),
+            //komentar = null.add(komentar)
         )
         viewModelScope.launch {
             try {
@@ -123,30 +133,46 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         }
     }
 
-    fun filterOrdinacija(atribute: String) {
-        val atributelowcase = atribute.lowercase()
+    fun filterOrdinacija(atribut: String) {
+        val atributLower = atribut.lowercase()
         viewModelScope.launch {
             try {
                 val result = storageService.getAllOrdinacije().filter { ordinacija ->
-                    ordinacija.naziv.lowercase().contains(atributelowcase) ||
-                            ordinacija.doktor.lowercase().contains(atributelowcase) ||
-                            ordinacija.procedura.lowercase().contains(atributelowcase)
+                    ordinacija.naziv.lowercase().contains(atributLower)
                 }
                 fOrdinacija.value = result
-            }
-            catch(e : Exception){
-                println("Greska: ${e.message}")
+            } catch (e: Exception) {
+                println("Greška: ${e.message}")
             }
         }
     }
+    fun filterOrdinacijaPoKomentarima(atribut: String) {
+        val atributLower = atribut.lowercase()
+        viewModelScope.launch {
+            try {
+                val sveOrdinacije = storageService.getAllOrdinacije()
+                val result = sveOrdinacije.filter { ordinacija ->
+                    val komentari = storageService.getAllKomentari(ordinacija.id)
+                    komentari.any { komentar ->
+                            komentar.doktor.lowercase().contains(atributLower) ||
+                                    komentar.procedura.lowercase().contains(atributLower)
+                    } || ordinacija.naziv.lowercase().contains(atributLower)
+                }
+                fOrdinacija.value = result
+            } catch (e: Exception) {
+                println("Greška: ${e.message}")
+            }
+        }
+    }
+
     fun filterOrdinacijaByOcena(ocena : Double){
         val ocenaDouble = "%.1f".format(ocena)
         viewModelScope.launch {
             try {
-                val allOrdinacije = storageService.getAllOrdinacije()
-                val result = allOrdinacije.filter { ordinacija ->
-                    val ordinacijaOcena = "%.1f".format(ordinacija.ocena)
-                    ordinacijaOcena == ocenaDouble
+                val sveOrdinacije = storageService.getAllOrdinacije()
+                val result = sveOrdinacije.filter { ordinacija ->
+                    val ordinacijaOcena = storageService.getAllOcene(ordinacija.id)
+                    ordinacijaOcena.any(){"%.1f".format(it.vrednost) == ocenaDouble}
                 }
                 fOrdinacija.value = result
             }catch(e : Exception){
@@ -218,6 +244,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
             println("Greška: Korisnik nije ulogovan. Poeni nisu dodati.")
         }
     }
+
 }
 class OrdinacijaViewModelFactory(private val storageService: StorageService,
     private val lokacijaViewModel: LokacijaViewModel,

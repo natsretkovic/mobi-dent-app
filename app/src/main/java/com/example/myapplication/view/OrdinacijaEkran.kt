@@ -1,6 +1,5 @@
 package com.example.myapplication.view
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,16 +17,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.model.Ordinacija
-import com.example.myapplication.viewmodel.AuthViewModel
 import com.example.myapplication.viewmodel.LokacijaViewModel
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 
 @Composable
 fun OrdinacijaEkran(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     viewModel: OrdinacijaViewModel,
     viewModelLoc: LokacijaViewModel
 ) {
@@ -35,7 +31,9 @@ fun OrdinacijaEkran(
     var doktor by remember { mutableStateOf("") }
     var procedura by remember { mutableStateOf("") }
     var komentar by remember { mutableStateOf("") }
-    var ocena by remember { mutableStateOf("") }
+    var ocenaText by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -48,32 +46,46 @@ fun OrdinacijaEkran(
             TextField(
                 value = naziv,
                 onValueChange = { naziv = it },
-                label = { Text("Naziv ordinacije") })
+                label = { Text("Naziv ordinacije") }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 value = doktor,
                 onValueChange = { doktor = it },
-                label = { Text("Doktor koji je vrsio proceduru") })
+                label = { Text("Doktor koji je vrsio proceduru") }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 value = procedura,
                 onValueChange = { procedura = it },
-                label = { Text("Procedura koju ste imali") })
+                label = { Text("Procedura koju ste imali") }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 value = komentar,
                 onValueChange = { komentar = it },
-                label = { Text("Dodajte komentar") })
+                label = { Text("Dodajte komentar") }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             TextField(
-                value = ocena,
-                onValueChange = { ocena = it },
-                label = { Text("Ocena") })
+                value = ocenaText,
+                onValueChange = { ocenaText = it },
+                label = { Text("Ocena 1.0 - 5.0") }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            if (error.isNotEmpty()) {
+                Text(text = error, color = androidx.compose.ui.graphics.Color.Red)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             Button(
                 onClick = {
-                    viewModel.addOrdinacija(
-                        naziv,
-                        doktor,
-                        procedura,
-                        ocena.toDouble(),
-                        komentar
-                    )
+                    val ocenaDouble = ocenaText.toDoubleOrNull()
+                    if (naziv.isBlank() || doktor.isBlank() || procedura.isBlank() || komentar.isBlank() || ocenaDouble == null) {
+                        error = "Molimo popunite sva polja ispravno"
+                        return@Button
+                    }
+                    error = ""
+                    viewModel.addOrdinacija(naziv,doktor,procedura,ocenaDouble,komentar)
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

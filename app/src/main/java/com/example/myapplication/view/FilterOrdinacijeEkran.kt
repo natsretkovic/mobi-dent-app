@@ -55,6 +55,7 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
             onValueChange = {
                 searchText = it
                 ordinacijaViewModel.filterOrdinacija(it)
+                ordinacijaViewModel.filterOrdinacijaPoKomentarima(it)
 
             },
             label = { Text("Pretraži po nazivu, doktoru ili proceduri") },
@@ -68,7 +69,6 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
                 ordinacijaViewModel.filterOrdinacijaByOcena(ocena)
             },
             valueRange = 0f..5f,
-            steps =9,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -95,24 +95,3 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
     }
 }
 }
-    /*@Composable
-    fun OrdinacijaCard(ordinacija: Ordinacija,showUsersOrdinacija: Boolean) {
-        val color = if(showUsersOrdinacija) Color(0xFFA627F5) else Color.Gray
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            colors = CardDefaults.cardColors(containerColor = color)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(text = "Naziv: ${ordinacija.naziv}", style = MaterialTheme.typography.titleMedium)
-                Text(text = "Doktor: ${ordinacija.doktor}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Procedura: ${ordinacija.procedura}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Ocena: ${String.format("%.1f", ordinacija.ocena)}", style = MaterialTheme.typography.bodySmall)
-            }
-        }
-    }*/

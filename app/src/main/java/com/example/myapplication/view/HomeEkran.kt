@@ -3,6 +3,7 @@ package com.example.myapplication.view
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,28 +34,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.navigation.Navigator
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.example.myapplication.viewmodel.KorisnikViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import coil.compose.AsyncImage
 
 @Composable
 fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewModel : KorisnikViewModel){
-    val context = LocalContext.current
 
     val korisnik by korisnikViewModel.korisnik.collectAsState()
-
-    val locationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-        } else {
-            Toast.makeText(context, "Lokacija nije odobrena", Toast.LENGTH_SHORT).show()
-        }
-    }
+    val imageUrl = korisnikViewModel.korisnik.collectAsState().value?.profilnaSlikaUrl
 
     Box(
         modifier=modifier,
@@ -79,6 +76,16 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewM
                     shape = CircleShape,
                     color = Color.Gray
                 ) {
+                    imageUrl?.let { url ->
+                        AsyncImage(
+                            model = url,
+                            contentDescription = "Profilna slika",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape),
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                        )
+                    }
                 }
             }
 

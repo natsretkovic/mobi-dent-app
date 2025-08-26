@@ -63,7 +63,9 @@ fun EditOrdinacijaEkran(ordinacijaViewModel: OrdinacijaViewModel) {
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
+
             ) {
+
             }
 
         }

@@ -17,8 +17,6 @@ class KorisnikService(private val auth: FirebaseAuth,
 {
     //private val userId = auth.currentUser?.uid
     private val collectionName="korisnici"
-
-
     suspend fun getKorisnik(id:String): Korisnik? {
         if(id==null){
             return null

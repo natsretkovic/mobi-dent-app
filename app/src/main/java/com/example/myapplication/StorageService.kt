@@ -30,7 +30,7 @@ class StorageService(private val firestore: FirebaseFirestore) {
         if(!komentari.isEmpty()) {
             for (komentar in komentari) {
                 ordinacija.collection("komentari")
-                    .document(komentar!!.id)
+                    .document(komentar.id)
                     .delete()
                     .await()
             }
@@ -39,7 +39,7 @@ class StorageService(private val firestore: FirebaseFirestore) {
         if(!ocene.isEmpty()) {
             for (ocena in ocene) {
                 ordinacija.collection("ocene")
-                    .document(ocena!!.id)
+                    .document(ocena.id)
                     .delete()
                     .await()
             }
@@ -108,7 +108,9 @@ class StorageService(private val firestore: FirebaseFirestore) {
             .await()
         return snapshot.documents.mapNotNull { it.toObject(Ocena::class.java) }
     }
-
+    suspend fun numOfOcena(ordinacijaId : String) : Int{
+        return getAllOcene(ordinacijaId).size
+    }
  //ocekuje listu koja nije prazna zato mapNotNull
 
 

@@ -12,9 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.model.Ordinacija
+import com.example.myapplication.viewmodel.OrdinacijaViewModel
 
 @Composable
-fun OrdinacijaCard(ordinacija: Ordinacija, modifier: Modifier = Modifier) {
+fun OrdinacijaCard(ordinacija: Ordinacija,modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()

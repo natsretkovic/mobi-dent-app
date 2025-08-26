@@ -1,5 +1,6 @@
 package com.example.myapplication.view
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.viewmodel.LokacijaViewModel
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
@@ -25,14 +27,14 @@ import com.example.myapplication.viewmodel.OrdinacijaViewModel
 fun OrdinacijaEkran(
     modifier: Modifier = Modifier,
     viewModel: OrdinacijaViewModel,
-    viewModelLoc: LokacijaViewModel
 ) {
     var naziv by remember { mutableStateOf("") }
     var doktor by remember { mutableStateOf("") }
     var procedura by remember { mutableStateOf("") }
     var komentar by remember { mutableStateOf("") }
     var ocenaText by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -73,19 +75,18 @@ fun OrdinacijaEkran(
                 label = { Text("Ocena 1.0 - 5.0") }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            if (error.isNotEmpty()) {
-                Text(text = error, color = androidx.compose.ui.graphics.Color.Red)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
             Button(
                 onClick = {
                     val ocenaDouble = ocenaText.toDoubleOrNull()
                     if (naziv.isBlank() || doktor.isBlank() || procedura.isBlank() || komentar.isBlank() || ocenaDouble == null) {
-                        error = "Molimo popunite sva polja ispravno"
+                        message = "Molimo vas popunite ne preskacite polja"
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         return@Button
                     }
-                    error = ""
+
                     viewModel.addOrdinacija(naziv,doktor,procedura,ocenaDouble,komentar)
+                    message = "Uspesno ste dodali ordinaciju"
+                    Toast.makeText(context,message,Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

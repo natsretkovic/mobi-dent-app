@@ -24,18 +24,27 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
                           private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
+
     private val ordinacijaList = MutableStateFlow<List<Ordinacija>>(emptyList())
     val listOrdinacija: StateFlow<List<Ordinacija>> = ordinacijaList
+    private val ordinacija = MutableStateFlow<Ordinacija?>(null)
+    val selectedOrdinacija : StateFlow<Ordinacija?> = ordinacija
+
 
     private val fOrdinacija = MutableStateFlow<List<Ordinacija>>(emptyList())
     val ordinacijaFilter: StateFlow<List<Ordinacija>> = fOrdinacija
+    private val ocene = MutableStateFlow<List<Ocena>>(emptyList())
+    val oceneList : StateFlow<List<Ocena>> = ocene
+
+    private val komentari = MutableStateFlow<List<Komentar>>(emptyList())
+    val komentariList: StateFlow<List<Komentar>> = komentari
 
 
-   /* fun setCurrentOrdinacija(ordinacija: Ordinacija) {
-        selectedOrdinacija = ordinacija
+    fun setCurrentOrdinacija(ord: Ordinacija) {
+        ordinacija.value = ord
     }
 
-    fun resetCurrentOrdinacija() {
+    /*fun resetCurrentOrdinacija() {
         selectedOrdinacija = Ordinacija()
     }*/
 
@@ -49,40 +58,38 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         doktor: String,
         procedura: String,
         ocena: Double,
-        text: String
-       // onResult: (String, Boolean) -> Unit()
+        text: String,
     ) {
-        val trenutnaLokacija = lokacijaViewModel.userLocation.value
-        if (trenutnaLokacija != null) {
-              val novaOrdinacija =  Ordinacija(
+            val trenutnaLokacija = lokacijaViewModel.userLocation.value
+            if (trenutnaLokacija != null) {
+                val novaOrdinacija = Ordinacija(
                     naziv = naziv,
                     latitude = trenutnaLokacija.latitude,
                     longitude = trenutnaLokacija.longitude
                 )
-            val noviKomentar = Komentar(
-                tekst = text,
-                doktor = doktor,
-                procedura = procedura
-            )
-            val novaOcena = Ocena(
-                vrednost = checkOcena(ocena)
-            )
-            viewModelScope.launch {
-                try {
-                   val id = storageService.save(novaOrdinacija)
-                    storageService.saveKomentar(id,noviKomentar)
-                    storageService.saveOcena(id,novaOcena)
-                    println("Ordinacija uspešno dodata.")
+                val noviKomentar = Komentar(
+                    tekst = text,
+                    doktor = doktor,
+                    procedura = procedura
+                )
+                val novaOcena = Ocena(
+                    vrednost = checkOcena(ocena)
+                )
+                viewModelScope.launch {
+                    try {
+                        val id = storageService.save(novaOrdinacija)
+                        storageService.saveKomentar(id, noviKomentar)
+                        storageService.saveOcena(id, novaOcena)
+                        println("Ordinacija uspešno dodata.")
+                        addPoints(ocena, text)
 
-                    addPoints(ocena, text)
-
-                } catch (e: Exception) {
-                    println("Greška: ${e.message}")
+                    } catch (e: Exception) {
+                        ("Greška: ${e.message}")
+                    }
                 }
+            } else {
+                println("Lokacija nije dostupna.")
             }
-        } else {
-            println("Lokacija nije dostupna.")
-        }
     }
 
     fun updateOrdinacija(
@@ -95,10 +102,6 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     ) {
         val ord = Ordinacija(
             naziv = naziv,
-          // doktor = null.add(doktor),
-           // procedura = null.add(procedura),
-            //ocena = null.add(ocena),
-            //komentar = null.add(komentar)
         )
         viewModelScope.launch {
             try {
@@ -132,12 +135,11 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
             }
         }
     }
-
     fun filterOrdinacija(atribut: String) {
         val atributLower = atribut.lowercase()
         viewModelScope.launch {
             try {
-                val result = storageService.getAllOrdinacije().filter { ordinacija ->
+                val result = ordinacijaList.value.filter { ordinacija ->
                     ordinacija.naziv.lowercase().contains(atributLower)
                 }
                 fOrdinacija.value = result
@@ -150,8 +152,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         val atributLower = atribut.lowercase()
         viewModelScope.launch {
             try {
-                val sveOrdinacije = storageService.getAllOrdinacije()
-                val result = sveOrdinacije.filter { ordinacija ->
+                val result = ordinacijaList.value.filter { ordinacija ->
                     val komentari = storageService.getAllKomentari(ordinacija.id)
                     komentari.any { komentar ->
                             komentar.doktor.lowercase().contains(atributLower) ||
@@ -169,8 +170,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         val ocenaDouble = "%.1f".format(ocena)
         viewModelScope.launch {
             try {
-                val sveOrdinacije = storageService.getAllOrdinacije()
-                val result = sveOrdinacije.filter { ordinacija ->
+                val result = ordinacijaList.value.filter { ordinacija ->
                     val ordinacijaOcena = storageService.getAllOcene(ordinacija.id)
                     ordinacijaOcena.any(){"%.1f".format(it.vrednost) == ocenaDouble}
                 }
@@ -184,8 +184,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     fun filterOrdinacijaByDatum(pocetniDatum : Date, krajnjiDatum : Date){
         viewModelScope.launch {
             try {
-                var allOrdinacije = storageService.getAllOrdinacije()
-                var result = allOrdinacije.filter { ordinacije ->
+                var result = ordinacijaList.value.filter { ordinacije ->
                     (ordinacije.timestamp >= pocetniDatum) &&
                             (ordinacije.timestamp <= krajnjiDatum)
                 }
@@ -199,8 +198,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     fun getOrdinacijeFromUser(userId : String?){
         viewModelScope.launch {
             try {
-                var allOrdinacije = storageService.getAllOrdinacije()
-                var result = allOrdinacije.filter { ordinacije ->
+                var result = ordinacijaList.value.filter { ordinacije ->
                     (ordinacije.userId == userId)
                 }
                 fOrdinacija.value = result
@@ -210,7 +208,46 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
             }
         }
     }
+    fun getOcene(ordinacijaId : String){
+        viewModelScope.launch {
+            try{
+                ocene.value = storageService.getAllOcene(ordinacijaId)
+            }
+            catch(e: Exception){
+                println(e.message)
+            }
+        }
+    }
+    fun getKomentari(ordinacijaId : String){
+        viewModelScope.launch {
+            try{
+                komentari.value = storageService.getAllKomentari(ordinacijaId)
+            }
+            catch(e: Exception){
+                println(e.message)
+            }
+        }
+    }
+    fun updateOrdinaciju(ordinacijaId: String, ocena: Double, komentar: String, doktor: String, procedura: String) {
+        val noviKomentar = Komentar(tekst = komentar, doktor = doktor, procedura = procedura)
+        val novaOcena = Ocena(vrednost = checkOcena(ocena), ordinacijaId = ordinacijaId)
 
+        viewModelScope.launch {
+            try {
+                storageService.saveKomentar(ordinacijaId, noviKomentar)
+                storageService.saveOcena(ordinacijaId, novaOcena)
+
+                addPoints(ocena,komentar)
+
+                val trenutneOcene = ocene.value.toMutableList()
+                trenutneOcene.add(novaOcena)
+                ocene.value = trenutneOcene
+
+            } catch (e: Exception) {
+                println(e.message)
+            }
+        }
+    }
     private fun checkOcena(ocena: Double): Double {
         if (ocena > 5.0)
             return 5.0
@@ -231,7 +268,6 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
             poeni += 10.0
         return poeni
     }
-
     private suspend fun addPoints(ocena: Double, komentar: String) {
         val currentUserId = auth.currentUser?.uid
         if (currentUserId != null) {

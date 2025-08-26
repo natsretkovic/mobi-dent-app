@@ -74,8 +74,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     firestore
                 )
             )
-            OrdinacijaEkran(modifier,ordinacijaViewModel,
-                lokacijaViewModel)
+            OrdinacijaEkran(modifier,ordinacijaViewModel)
         }
         composable("rank"){
             val korisnikViewModel: KorisnikViewModel = viewModel(

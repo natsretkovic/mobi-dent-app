@@ -92,7 +92,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     firestore,
                 )
             )
-            FilterOrdinacijeEkran(ordinacijaViewModel)
+            FilterOrdinacijeEkran(ordinacijaViewModel,navController)
         }
         composable("allOrd"){
             val lokacijaViewModel: LokacijaViewModel = viewModel()
@@ -107,6 +107,13 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 factory = OrdinacijaViewModelFactory(storageService,lokacijaViewModel, auth, firestore)
             )
             EditOrdinacijaEkran(ordinacijaViewModel)
+        }
+        composable("ordinacijaprofil"){
+            val lokacijaViewModel: LokacijaViewModel = viewModel()
+            val ordinacijaViewModel: OrdinacijaViewModel = viewModel(
+                factory = OrdinacijaViewModelFactory(storageService,lokacijaViewModel, auth, firestore)
+            )
+            ProfilOrdinacije(ordinacijaViewModel)
         }
     }
 

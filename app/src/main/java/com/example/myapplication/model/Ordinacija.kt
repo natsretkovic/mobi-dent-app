@@ -2,6 +2,7 @@ package com.example.myapplication.model
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
+import java.time.LocalDateTime
 import java.util.Date
 
 data class Ordinacija(

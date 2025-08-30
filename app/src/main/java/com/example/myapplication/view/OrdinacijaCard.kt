@@ -1,5 +1,6 @@
 package com.example.myapplication.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,11 +16,11 @@ import com.example.myapplication.model.Ordinacija
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 
 @Composable
-fun OrdinacijaCard(ordinacija: Ordinacija,modifier: Modifier = Modifier) {
+fun OrdinacijaCard(ordinacija: Ordinacija, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp).clickable{onClick()},
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(

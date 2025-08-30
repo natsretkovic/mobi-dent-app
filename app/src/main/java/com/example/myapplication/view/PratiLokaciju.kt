@@ -18,7 +18,6 @@ import com.example.myapplication.viewmodel.LocationService
 @Composable
 fun PratiLokaciju(context: Context) {
 
-    //val context = LocalContext.current
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -44,8 +43,7 @@ fun PratiLokaciju(context: Context) {
                 permissionLauncher.launch(
                     arrayOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        //Manifest.permission.FOREGROUND_SERVICE_LOCATION
+                        Manifest.permission.ACCESS_COARSE_LOCATION
                     )
                 )
             }) {

@@ -17,7 +17,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class OrdinacijaViewModel(private val storageService: StorageService,private val lokacijaViewModel: LokacijaViewModel,
                           private val auth: FirebaseAuth,
@@ -30,7 +32,6 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     private val ordinacija = MutableStateFlow<Ordinacija?>(null)
     val selectedOrdinacija : StateFlow<Ordinacija?> = ordinacija
 
-
     private val fOrdinacija = MutableStateFlow<List<Ordinacija>>(emptyList())
     val ordinacijaFilter: StateFlow<List<Ordinacija>> = fOrdinacija
     private val ocene = MutableStateFlow<List<Ocena>>(emptyList())
@@ -42,6 +43,11 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
 
     fun setCurrentOrdinacija(ord: Ordinacija) {
         ordinacija.value = ord
+        println("Selektovana ordinacija: ${ordinacija.value?.naziv} id njen ${ordinacija.value?.id}")
+       /* ord.id?.let { id ->
+            getOcene(id)
+            getKomentari(id)
+        }*/
     }
 
     /*fun resetCurrentOrdinacija() {
@@ -84,7 +90,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
                         addPoints(ocena, text)
 
                     } catch (e: Exception) {
-                        ("Greška: ${e.message}")
+                        ("Greska: ${e.message}")
                     }
                 }
             } else {
@@ -144,7 +150,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
                 }
                 fOrdinacija.value = result
             } catch (e: Exception) {
-                println("Greška: ${e.message}")
+                println("Greska: ${e.message}")
             }
         }
     }
@@ -161,7 +167,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
                 }
                 fOrdinacija.value = result
             } catch (e: Exception) {
-                println("Greška: ${e.message}")
+                println("Greska: ${e.message}")
             }
         }
     }
@@ -181,14 +187,16 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
 
         }
     }
-    fun filterOrdinacijaByDatum(pocetniDatum : Date, krajnjiDatum : Date){
+    fun filterOrdinacijaByDatum(pocetniDatum : String?, krajnjiDatum : String?){
         viewModelScope.launch {
             try {
-                var result = ordinacijaList.value.filter { ordinacije ->
-                    (ordinacije.timestamp >= pocetniDatum) &&
-                            (ordinacije.timestamp <= krajnjiDatum)
+                val formater = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val result = ordinacijaList.value.filter { ordinacije ->
+                    val datumString = formater.format(ordinacije.timestamp)
+                    (pocetniDatum.isNullOrEmpty() || datumString >= pocetniDatum) &&
+                            (krajnjiDatum.isNullOrEmpty() || datumString <= krajnjiDatum)
                 }
-                fOrdinacija.value = result
+                    fOrdinacija.value = result
             }
             catch(e : Exception){
                 println("Greska: ${e.message}")
@@ -277,7 +285,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
             println("Korisniku su dodati poeni: $poeni")
 
         } else {
-            println("Greška: Korisnik nije ulogovan. Poeni nisu dodati.")
+            println("Korisnik nije ulogovan")
         }
     }
 

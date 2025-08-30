@@ -41,7 +41,6 @@ fun SveOrdinacijeEkran(modifier: Modifier, ordinacijeViewModel : OrdinacijaViewM
 
     val sveOrdinacije = ordinacijeViewModel.listOrdinacija.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
-
     var selektovanaOrdinacija by remember { mutableStateOf<Ordinacija?>(null) }
 
 
@@ -71,7 +70,6 @@ fun SveOrdinacijeEkran(modifier: Modifier, ordinacijeViewModel : OrdinacijaViewM
                     Column(Modifier.padding(16.dp)) {
                         Text(
                             text = ordinacija.naziv,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                     }
                 }

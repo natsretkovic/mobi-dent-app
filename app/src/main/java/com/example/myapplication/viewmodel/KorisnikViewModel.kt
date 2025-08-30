@@ -64,6 +64,6 @@ class KorisnikViewModelFactory(
         if (modelClass.isAssignableFrom(KorisnikViewModel::class.java)) {
             return KorisnikViewModel(service, auth, firestore) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        throw IllegalArgumentException("Nije u redu")
     }
 }

@@ -21,77 +21,95 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.compose.ui.graphics.Color
-
+import androidx.navigation.NavController
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel) {
+fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel, navController: NavController) {
     var searchText by remember { mutableStateOf("") }
     var ocena by remember { mutableStateOf(0.0) }
-    var pocetniDatum by remember { mutableStateOf<Date?>(null) }
-    var krajnjiDatum by remember { mutableStateOf<Date?>(null) }
-    var showStartDatePicker by remember { mutableStateOf(false) }
-    var showEndDatePicker by remember { mutableStateOf(false) }
     var showUsersOrdinacije by remember { mutableStateOf(false) }
     var auth = FirebaseAuth.getInstance()
+    var izabranDatum by remember { mutableStateOf(false) }
     val userId = auth.currentUser!!.uid
 
     val filteredList by ordinacijaViewModel.ordinacijaFilter.collectAsState()
-    val formatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    val state = rememberDateRangePickerState()
+    val formater = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-    Box( modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center) {
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "Filtriranje Ordinacija",
-            fontSize = 24.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        TextField(
-            value = searchText,
-            onValueChange = {
-                searchText = it
-                ordinacijaViewModel.filterOrdinacija(it)
-                ordinacijaViewModel.filterOrdinacijaPoKomentarima(it)
 
-            },
-            label = { Text("Pretraži po nazivu, doktoru ili proceduri") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Slider(
-            value = ocena.toFloat(),
-            onValueChange = {
-                ocena = it.toDouble()
-                ordinacijaViewModel.filterOrdinacijaByOcena(ocena)
-            },
-            valueRange = 0f..5f,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            modifier = Modifier.padding(1.dp),
-            onClick = { ordinacijaViewModel.getOrdinacijeFromUser(userId)
-                        showUsersOrdinacije=true
-            }
-        ){
-            Text("Dodate ordinacije")
-        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Filtriranje Ordinacija",
+                fontSize = 24.sp,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            TextField(
+                value = searchText,
+                onValueChange = {
+                    searchText = it
+                    ordinacijaViewModel.filterOrdinacija(it)
+                    ordinacijaViewModel.filterOrdinacijaPoKomentarima(it)
 
-        Spacer(modifier = Modifier.height(16.dp))
+                },
+                label = { Text("Pretrazi po nazivu, doktoru ili proceduri") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Slider(
+                value = ocena.toFloat(),
+                onValueChange = {
+                    ocena = it.toDouble()
+                    ordinacijaViewModel.filterOrdinacijaByOcena(ocena)
+                },
+                valueRange = 0f..5f,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            DateRangePicker(
+                state = state,
+                modifier = Modifier,
+                title = {
+                    Text(
+                        text = "Izaberi datum",
+                        modifier = Modifier.padding(16.dp)
+                    )
+                },
+                headline = {
+                    val pocetni = state.selectedStartDateMillis?.let { formater.format(Date(it)) }
+                    val krajnji = state.selectedEndDateMillis?.let { formater.format(Date(it)) }
+                    ordinacijaViewModel.filterOrdinacijaByDatum(pocetni,krajnji)
+                    izabranDatum=true
+                    Text(
+                        text = "Od: ${pocetni}   Do: ${krajnji}",
+                        modifier = Modifier.padding(16.dp)
+                    )
+                },
+                showModeToggle = true
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        if(searchText.isNotBlank() || ocena>0.0 || showUsersOrdinacije) {
-            LazyColumn(
+            if (searchText.isNotBlank() || ocena > 0.0 || showUsersOrdinacije || izabranDatum) {
+                LazyColumn(
                     modifier = Modifier.fillMaxSize()
-            ) {
-                items(filteredList) { ordinacija ->
-                    OrdinacijaCard(ordinacija)
+                ) {
+                    items(filteredList) { ordinacija ->
+                        OrdinacijaCard(ordinacija) {
+                            println("Kliknuto na ${ordinacija.naziv} njen id ${ordinacija.id}")
+                            ordinacijaViewModel.setCurrentOrdinacija(ordinacija)
+                            navController.navigate("ordinacijaprofil")
+                        }
+                    }
                 }
             }
         }
     }
 }
-}
+

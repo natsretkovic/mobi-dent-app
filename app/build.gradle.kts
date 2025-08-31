@@ -71,6 +71,4 @@ dependencies {
     implementation ("com.google.android.gms:play-services-location:21.2.0")
     implementation(libs.androidx.activity.compose)
     implementation("io.coil-kt:coil-compose:2.5.0")
-
-
 }

@@ -1,14 +1,11 @@
 package com.example.myapplication.viewmodel
 
 import android.net.Uri
-import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.model.Korisnik
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -47,7 +44,7 @@ class AuthViewModel : ViewModel() {
                 }
                     val korisnik = Korisnik(ime, prezime, brTelefona, username, email,slikaUrl)
                     db.collection("korisnici").document(userId).set(korisnik).await()
-                onResult(true, "Super!")
+                onResult(true, "Registracija uspela")
             } catch (e: Exception) {
                 onResult(false, e.localizedMessage ?: "Došlo je do greške.")
             }
@@ -60,18 +57,18 @@ class AuthViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                    val email = getEmailByUsername(userName)
-                    if (email == null) {
-                        onResult(false, "Korisničko ime nije pronađeno.")
-                        return@launch
-                    }
-                    auth.signInWithEmailAndPassword(email, password).await()
-                    onResult(true, null)
-                } catch (e: Exception) {
-                    onResult(false, e.localizedMessage ?: "Došlo je do greške.")
+                val email = getEmailByUsername(userName)
+                if (email == null) {
+                    onResult(false, "Korisničko ime nije pronađeno.")
+                    return@launch
                 }
+                auth.signInWithEmailAndPassword(email, password).await()
+                onResult(true, "Uspesno logovanje")
+            } catch (e: Exception) {
+                onResult(false, e.localizedMessage ?: "Došlo je do greške.")
             }
         }
+    }
    private suspend fun getEmailByUsername(inputUsername: String): String? {
         val snapshot = db.collection("korisnici")
             .whereEqualTo("username", inputUsername)

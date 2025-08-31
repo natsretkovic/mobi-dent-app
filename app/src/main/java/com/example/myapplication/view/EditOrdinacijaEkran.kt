@@ -36,7 +36,6 @@ fun EditOrdinacijaEkran(ordinacijaViewModel: OrdinacijaViewModel) {
     var deleteClicked by remember { mutableStateOf(false) }
     var selectedOrdinacija by remember { mutableStateOf<Ordinacija?>(null) }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize().statusBarsPadding()

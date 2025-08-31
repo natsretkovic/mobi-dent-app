@@ -1,12 +1,10 @@
 package com.example.myapplication.viewmodel
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.location.Location
-import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.example.myapplication.viewmodel.utils.LocationClient
@@ -17,7 +15,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import com.example.myapplication.R
 import com.example.myapplication.model.Korisnik
-import com.example.myapplication.model.Ordinacija
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.catch

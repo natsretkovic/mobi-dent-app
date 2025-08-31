@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -60,8 +61,8 @@ fun GoogleMapaEkran(
     properties: MapProperties = MapProperties(),
     uiSettings: MapUiSettings = MapUiSettings(),
 ) {
-    val userLocation = viewModel.userLocation.collectAsState(initial = null)
-    val ordinacije = viewModel.listOrdinacija.collectAsState(initial = emptyList())
+    val userLocation = viewModel.userLocation.collectAsState(null)
+    val ordinacije = viewModel.listOrdinacija.collectAsState(emptyList())
     val filteredOrdinacije = viewModelOrdinacija.ordinacijaFilter.collectAsState(emptyList())
     var showOrdinacijeRadius by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
@@ -76,7 +77,7 @@ fun GoogleMapaEkran(
     } else {
         ordinacijeZaPrikaz = ordinacije.value
     }
-    /*LaunchedEffect(userLocation.value) {
+    LaunchedEffect(userLocation.value) {
         userLocation.value?.let { loc ->
             val newPosition = LatLng(loc.latitude, loc.longitude)
             cameraPositionState.animate(
@@ -86,15 +87,14 @@ fun GoogleMapaEkran(
                 durationMs = 1000
             )
         }
-    }*/
+    }
 
-    Column(modifier= Modifier.fillMaxSize()) {
+    Column(modifier= Modifier.fillMaxSize().safeContentPadding()) {
         TextField(
             value = searchText,
             onValueChange = {
                 searchText = it
                 viewModelOrdinacija.filterOrdinacija(it)
-
             },
             label = { Text("Pretraži po nazivu, doktoru ili proceduri") },
             modifier = Modifier.fillMaxWidth()
@@ -111,10 +111,9 @@ fun GoogleMapaEkran(
                 R.drawable.toothmarker
             ) as BitmapDrawable
             val bitmap = drawable.bitmap
-
             val scaledBitmap = bitmap.scale(80, 80, false)
-
             val scaledMarkerIcon = BitmapDescriptorFactory.fromBitmap(scaledBitmap)
+
             userLocation.value?.let { loc ->
                 val userLatLng = LatLng(loc.latitude, loc.longitude)
                 Marker(
@@ -159,12 +158,11 @@ fun GoogleMapaEkran(
                         showOrdinacijeRadius = false
                     }
                 },
-               // modifier = Modifier.align(Alignment.Bottom)
             ) {
                 if (showOrdinacijeRadius) {
                     Text("Obican prikaz")
                 } else {
-                    Text("Filtrijaj po radijusu")
+                    Text("Filtriraj po radijusu")
                 }
 
             }

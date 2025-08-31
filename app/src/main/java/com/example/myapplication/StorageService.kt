@@ -63,7 +63,6 @@ class StorageService(private val firestore: FirebaseFirestore) {
 
     }
     suspend fun getKomentar(ordinacijaId :String, korisnikId :String) : Komentar?{
-
         val snapshot = firestore.collection(collectionName)
             .document(ordinacijaId)
             .collection("komentari")

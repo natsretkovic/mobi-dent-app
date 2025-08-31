@@ -25,6 +25,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import coil.compose.AsyncImage
+import com.google.firebase.Firebase
 
 
 @Composable

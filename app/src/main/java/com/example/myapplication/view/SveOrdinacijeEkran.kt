@@ -33,11 +33,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.myapplication.model.Ordinacija
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 
 @Composable
-fun SveOrdinacijeEkran(modifier: Modifier, ordinacijeViewModel : OrdinacijaViewModel) {
+fun SveOrdinacijeEkran(modifier: Modifier, ordinacijeViewModel : OrdinacijaViewModel, navController : NavHostController) {
 
     val sveOrdinacije = ordinacijeViewModel.listOrdinacija.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
@@ -65,7 +66,6 @@ fun SveOrdinacijeEkran(modifier: Modifier, ordinacijeViewModel : OrdinacijaViewM
                             selektovanaOrdinacija = ordinacija
                             showDialog = true
                         },
-                    elevation = CardDefaults.cardElevation()
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
@@ -90,6 +90,7 @@ fun SveOrdinacijeEkran(modifier: Modifier, ordinacijeViewModel : OrdinacijaViewM
                     showDialog = false
                 }
             )
+
         }
     }
 }

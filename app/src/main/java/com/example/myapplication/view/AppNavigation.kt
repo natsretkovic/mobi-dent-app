@@ -32,6 +32,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     val korisnikService = KorisnikService(auth, firestore)
     val storageService = StorageService(firestore)
 
+    val lokacijaViewModel: LokacijaViewModel = viewModel()
+    val ordinacijaViewModel: OrdinacijaViewModel = viewModel(
+        factory = OrdinacijaViewModelFactory(storageService, lokacijaViewModel, auth, firestore)
+    )
+
     NavHost(navController, startDestination = prvaStrana) {
         composable("auth"){
             AuthEkran(modifier, navController)
@@ -83,36 +88,15 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             RankingEkran(modifier,navController,korisnikViewModel)
         }
         composable("filterOrd"){
-            val lokacijaViewModel: LokacijaViewModel = viewModel()
-            val ordinacijaViewModel: OrdinacijaViewModel = viewModel(
-                factory = OrdinacijaViewModelFactory(
-                    storageService,
-                    lokacijaViewModel,
-                    auth,
-                    firestore,
-                )
-            )
             FilterOrdinacijeEkran(ordinacijaViewModel,navController)
         }
         composable("allOrd"){
-            val lokacijaViewModel: LokacijaViewModel = viewModel()
-            val ordinacijaViewModel: OrdinacijaViewModel = viewModel(
-                factory = OrdinacijaViewModelFactory(storageService,lokacijaViewModel, auth, firestore)
-            )
-            SveOrdinacijeEkran(modifier,ordinacijaViewModel)
+            SveOrdinacijeEkran(modifier,ordinacijaViewModel,navController)
         }
         composable("editordinacije"){
-            val lokacijaViewModel: LokacijaViewModel = viewModel()
-            val ordinacijaViewModel: OrdinacijaViewModel = viewModel(
-                factory = OrdinacijaViewModelFactory(storageService,lokacijaViewModel, auth, firestore)
-            )
             EditOrdinacijaEkran(ordinacijaViewModel)
         }
-        composable("ordinacijaprofil"){
-            val lokacijaViewModel: LokacijaViewModel = viewModel()
-            val ordinacijaViewModel: OrdinacijaViewModel = viewModel(
-                factory = OrdinacijaViewModelFactory(storageService,lokacijaViewModel, auth, firestore)
-            )
+        composable("ordinacijaprofil") {
             ProfilOrdinacije(ordinacijaViewModel)
         }
     }

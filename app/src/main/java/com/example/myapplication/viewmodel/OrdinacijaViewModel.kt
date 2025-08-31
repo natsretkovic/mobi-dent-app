@@ -44,10 +44,17 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     fun setCurrentOrdinacija(ord: Ordinacija) {
         ordinacija.value = ord
         println("Selektovana ordinacija: ${ordinacija.value?.naziv} id njen ${ordinacija.value?.id}")
-       /* ord.id?.let { id ->
-            getOcene(id)
-            getKomentari(id)
-        }*/
+        ord.id?.let { id ->
+            viewModelScope.launch {
+                try {
+                    getOcene(ord.id)
+                    getKomentari(ord.id)
+
+                } catch (e: Exception) {
+                    println("Greska pri ucitavanju podkolekcija: ${e.message}")
+                }
+            }
+        }
     }
 
     /*fun resetCurrentOrdinacija() {
@@ -201,6 +208,11 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
             catch(e : Exception){
                 println("Greska: ${e.message}")
             }
+        }
+    }
+    fun resetFilter(){
+        viewModelScope.launch {
+            fOrdinacija.value = storageService.getAllOrdinacije()
         }
     }
     fun getOrdinacijeFromUser(userId : String?){

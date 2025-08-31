@@ -8,9 +8,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 
 @Composable
@@ -21,31 +21,41 @@ fun ProfilOrdinacije(
     val komentari by ordinacijaViewModel.komentariList.collectAsState(emptyList())
     val ocene by ordinacijaViewModel.oceneList.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().safeContentPadding().padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally) {
 
+        Text(
+            text = "Stomatoloska ordinacija",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
         if (ordinacija != null) {
-            Text("Naziv ${ordinacija.naziv}")
+            Text(
+                text = ordinacija.naziv,
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        } else {
+            Text("ucitava se...")
         }
-            else{
-                Text("niSTA")
-            }
-           /* if(!komentari.isEmpty()) {
-                    LazyColumn {
-                        items(komentari) { komentar ->
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(4.dp),
-                                elevation = CardDefaults.cardElevation(4.dp)
-                            ) {
-                                Column(modifier = Modifier.padding(8.dp)) {
-                                    Text("Doktor: ${komentar.doktor}")
-                                    Text("Procedura: ${komentar.procedura}")
-                                    Text("Komentar: ${komentar.tekst}")
-                                }
-                            }
+        if (!komentari.isEmpty()) {
+            LazyColumn {
+                items(komentari) { komentar ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp),
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text("Doktor: ${komentar.doktor}")
+                            Text("Procedura: ${komentar.procedura}")
+                            Text("Komentar: ${komentar.tekst}")
                         }
                     }
-                }*/
+                }
+            }
         }
     }
+}

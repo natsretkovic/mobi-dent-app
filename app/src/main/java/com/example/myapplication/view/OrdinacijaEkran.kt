@@ -27,6 +27,7 @@ import com.example.myapplication.viewmodel.OrdinacijaViewModel
 fun OrdinacijaEkran(
     modifier: Modifier = Modifier,
     viewModel: OrdinacijaViewModel,
+    lokacijaViewModel: LokacijaViewModel
 ) {
     var naziv by remember { mutableStateOf("") }
     var doktor by remember { mutableStateOf("") }
@@ -77,14 +78,16 @@ fun OrdinacijaEkran(
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    val ocenaDouble = ocenaText.toDoubleOrNull()
-                    if (naziv.isBlank() || doktor.isBlank() || procedura.isBlank() || komentar.isBlank() || ocenaDouble == null) {
-                        message = "Molimo vas popunite ne preskacite polja"
+                    val ocenaDouble = ocenaText.toDouble()
+                    if (naziv.isBlank() || doktor.isBlank() || procedura.isBlank()) {
+                        message = "Molimo vas popunite naziv, proceduru i doktora"
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         return@Button
                     }
 
-                    viewModel.addOrdinacija(naziv,doktor,procedura,ocenaDouble,komentar)
+                    viewModel.addOrdinacija(naziv,doktor,procedura,ocenaDouble,komentar,
+                        lokacijaViewModel.listenerKorisnik.value!!.longitude,
+                        lokacijaViewModel.listenerKorisnik.value!!.latitude )
                     message = "Uspesno ste dodali ordinaciju"
                     Toast.makeText(context,message,Toast.LENGTH_SHORT).show()
                 },

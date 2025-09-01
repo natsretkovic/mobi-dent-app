@@ -16,24 +16,24 @@ class KorisnikViewModel(private val service : KorisnikService,
                         private val auth: FirebaseAuth,
                         private val firestore: FirebaseFirestore) : ViewModel() {
 
-    private val user = MutableStateFlow<Korisnik?>(null)
-    val korisnik: StateFlow<Korisnik?> = user.asStateFlow()
+    private val _korisnik = MutableStateFlow<Korisnik?>(null)
+    val korisnik: StateFlow<Korisnik?> = _korisnik.asStateFlow()
 
-    private val userList = MutableStateFlow<List<Korisnik>>(emptyList())
-    val allUsersList : StateFlow<List<Korisnik>> = userList
+    private val _listaKorisnika = MutableStateFlow<List<Korisnik>>(emptyList())
+    val listaKorisnika : StateFlow<List<Korisnik>> = _listaKorisnika
 
     private val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
         val currentUser = firebaseAuth.currentUser
         if (currentUser != null) {
             viewModelScope.launch {
                 try {
-                    user.value = service.getKorisnik(currentUser.uid)
+                    _korisnik.value = service.getKorisnik(currentUser.uid)
                 } catch (e: Exception) {
                     println(e.toString())
                 }
             }
         } else {
-            user.value = null
+            _korisnik.value = null
         }
     }
     init {
@@ -46,9 +46,12 @@ class KorisnikViewModel(private val service : KorisnikService,
     }
     fun getAllUsersList() {
         viewModelScope.launch {
-            userList.value = service.getAllUsers()
+            service.getAllUsers().collect { korisnici ->
+                _listaKorisnika.value = korisnici
+            }
         }
     }
+
 
 }
 // bez stateFlow sa userId mozda null pada kad se pokrece, zato mora da se prati dal je ulogovan

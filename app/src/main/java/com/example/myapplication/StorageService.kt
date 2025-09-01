@@ -51,7 +51,7 @@ class StorageService(private val firestore: FirebaseFirestore) {
         ordinacija.delete().await()
     }
     fun getAllOrdinacije(): Flow<List<Ordinacija>>{
-        return firestore.collection("kolekcijaordinacija")
+        return firestore.collection(collectionName)
             .snapshots()
             .map { snapshot ->
                 snapshot.toObjects()

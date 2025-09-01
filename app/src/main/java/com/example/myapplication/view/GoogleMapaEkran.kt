@@ -1,7 +1,6 @@
 package com.example.myapplication.view
 
 import android.graphics.drawable.BitmapDrawable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -52,7 +50,7 @@ import com.google.maps.android.compose.Circle
 
 @Composable
 fun GoogleMapaEkran(
-    viewModel: LokacijaViewModel,
+    lokacijaViewModel: LokacijaViewModel,
     viewModelOrdinacija: OrdinacijaViewModel,
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState {
@@ -61,8 +59,8 @@ fun GoogleMapaEkran(
     properties: MapProperties = MapProperties(),
     uiSettings: MapUiSettings = MapUiSettings(),
 ) {
-    val userLocation = viewModel.userLocation.collectAsState(null)
-    val ordinacije = viewModel.listOrdinacija.collectAsState(emptyList())
+    val userLocation = lokacijaViewModel.listenerKorisnik.collectAsState(null)
+    val ordinacije = lokacijaViewModel.listenerOrdinacija.collectAsState(emptyList())
     val filteredOrdinacije = viewModelOrdinacija.ordinacijaFilter.collectAsState(emptyList())
     var showOrdinacijeRadius by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
@@ -71,7 +69,7 @@ fun GoogleMapaEkran(
 
     var ordinacijeZaPrikaz : List<Ordinacija>
     if (showOrdinacijeRadius) {
-        ordinacijeZaPrikaz = viewModel.getOrdinacijaRadius(inputRadius)
+        ordinacijeZaPrikaz = lokacijaViewModel.getOrdinacijaRadius(inputRadius)
     } else if (searchText.isNotBlank()) {
         ordinacijeZaPrikaz = filteredOrdinacije.value
     } else {

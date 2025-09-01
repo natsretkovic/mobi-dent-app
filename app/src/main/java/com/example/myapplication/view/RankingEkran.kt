@@ -12,7 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.myapplication.model.Korisnik
 import androidx.compose.runtime.getValue
@@ -22,7 +21,7 @@ import com.example.myapplication.viewmodel.KorisnikViewModel
 fun RankingEkran(modifier: Modifier, navContoller : NavHostController,
                  korisnikViewModel: KorisnikViewModel) {
 
-    val korisnici by korisnikViewModel.allUsersList.collectAsState()
+    val korisnici by korisnikViewModel.listaKorisnika.collectAsState()
     val rankList = korisnici.sortedByDescending { it.poeni }
 
 

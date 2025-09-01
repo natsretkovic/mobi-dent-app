@@ -26,6 +26,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import coil.compose.AsyncImage
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 
 @Composable
@@ -145,6 +146,7 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
                     if (success) {
                         message = "Registracija je uspesna!"
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        Firebase.auth.signOut()
                         navContoller.navigate("auth"){
                             popUpTo("register") {
                                 inclusive = true

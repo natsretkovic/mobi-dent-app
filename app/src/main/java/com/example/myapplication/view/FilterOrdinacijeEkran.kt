@@ -28,9 +28,9 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel, navControlle
     var krajnjiDatum by remember  { mutableStateOf<String?>("") }
     var buttonClicked by remember {mutableStateOf(false)}
 
-    LaunchedEffect(Unit) {
+    /*LaunchedEffect(Unit) {
         ordinacijaViewModel.resetFilter()
-    }
+    }*/
 
     Box(
         modifier = Modifier.fillMaxWidth().safeContentPadding(),

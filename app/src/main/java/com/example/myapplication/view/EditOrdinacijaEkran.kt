@@ -31,7 +31,7 @@ import com.example.myapplication.viewmodel.OrdinacijaViewModel
 @Composable
 fun EditOrdinacijaEkran(ordinacijaViewModel: OrdinacijaViewModel) {
 
-    val usersListOrdiancija by ordinacijaViewModel.listOrdinacija.collectAsState()
+    val usersListOrdiancija by ordinacijaViewModel.ordinacijaFilter.collectAsState()
     var selectedOrdinacija by remember { mutableStateOf<Ordinacija?>(null) }
 
     Column(

@@ -1,13 +1,10 @@
 package com.example.myapplication.viewmodel
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.StorageService
 import com.example.myapplication.model.Ordinacija
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.model.Komentar
 import com.example.myapplication.model.Ocena
@@ -18,19 +15,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
-class OrdinacijaViewModel(private val storageService: StorageService,private val lokacijaViewModel: LokacijaViewModel,
+class OrdinacijaViewModel(private val storageService: StorageService,
                           private val auth: FirebaseAuth,
                           private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
 
-    private val ordinacijaList = MutableStateFlow<List<Ordinacija>>(emptyList())
-    val listOrdinacija: StateFlow<List<Ordinacija>> = ordinacijaList
-    private val ordinacija = MutableStateFlow<Ordinacija?>(null)
-    val selectedOrdinacija : StateFlow<Ordinacija?> = ordinacija
+    private val _ordinacijaList = MutableStateFlow<List<Ordinacija>>(emptyList())
+    val ordinacijaList: StateFlow<List<Ordinacija>> = _ordinacijaList
+    private val _ordinacija = MutableStateFlow<Ordinacija?>(null)
+    val ordinacija : StateFlow<Ordinacija?> = _ordinacija
 
     private val fOrdinacija = MutableStateFlow<List<Ordinacija>>(emptyList())
     val ordinacijaFilter: StateFlow<List<Ordinacija>> = fOrdinacija
@@ -42,8 +38,8 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
 
 
     fun setCurrentOrdinacija(ord: Ordinacija) {
-        ordinacija.value = ord
-        println("Selektovana ordinacija: ${ordinacija.value?.naziv} id njen ${ordinacija.value?.id}")
+        _ordinacija.value = ord
+        println("Selektovana ordinacija: ${_ordinacija.value?.naziv} id njen ${_ordinacija.value?.id}")
         ord.id?.let { id ->
             viewModelScope.launch {
                 try {
@@ -72,13 +68,13 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         procedura: String,
         ocena: Double,
         text: String,
+        longitude : Double,
+        latitude : Double
     ) {
-            val trenutnaLokacija = lokacijaViewModel.userLocation.value
-            if (trenutnaLokacija != null) {
                 val novaOrdinacija = Ordinacija(
                     naziv = naziv,
-                    latitude = trenutnaLokacija.latitude,
-                    longitude = trenutnaLokacija.longitude
+                    latitude = latitude,
+                    longitude = longitude
                 )
                 val noviKomentar = Komentar(
                     tekst = text,
@@ -100,9 +96,6 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
                         ("Greska: ${e.message}")
                     }
                 }
-            } else {
-                println("Lokacija nije dostupna.")
-            }
     }
 
     fun updateOrdinacija(
@@ -141,7 +134,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     fun listOrdinacija() {
         viewModelScope.launch {
             storageService.getAllOrdinacije().collect { ordinacije ->
-                ordinacijaList.value = ordinacije
+                _ordinacijaList.value = ordinacije
             }
         }
     }
@@ -149,7 +142,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         val atributLower = atribut.lowercase()
         viewModelScope.launch {
             try {
-                val result = ordinacijaList.value.filter { ordinacija ->
+                val result = _ordinacijaList.value.filter { ordinacija ->
                     ordinacija.naziv.lowercase().contains(atributLower)
                 }
                 fOrdinacija.value = result
@@ -162,7 +155,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         val atributLower = atribut.lowercase()
         viewModelScope.launch {
             try {
-                val result = ordinacijaList.value.filter { ordinacija ->
+                val result = _ordinacijaList.value.filter { ordinacija ->
                     val komentari = storageService.getAllKomentari(ordinacija.id)
                     komentari.any { komentar ->
                             komentar.doktor.lowercase().contains(atributLower) ||
@@ -180,7 +173,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         val ocenaDouble = "%.1f".format(ocena)
         viewModelScope.launch {
             try {
-                val result = ordinacijaList.value.filter { ordinacija ->
+                val result = _ordinacijaList.value.filter { ordinacija ->
                     val ordinacijaOcena = storageService.getAllOcene(ordinacija.id)
                     ordinacijaOcena.any(){"%.1f".format(it.vrednost) == ocenaDouble}
                 }
@@ -195,7 +188,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
         viewModelScope.launch {
             try {
                 val formater = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val result = ordinacijaList.value.filter { ordinacije ->
+                val result = _ordinacijaList.value.filter { ordinacije ->
                     val datumString = formater.format(ordinacije.timestamp)
                     (pocetniDatum.isNullOrEmpty() || datumString >= pocetniDatum) &&
                             (krajnjiDatum.isNullOrEmpty() || datumString <= krajnjiDatum)
@@ -221,7 +214,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
                 val snapshot = firestore.collection("kolekcijaordinacija")
                     .whereEqualTo("userId", uid).get().await()
                 val lista = snapshot.toObjects(Ordinacija::class.java)
-                ordinacijaList.value = lista
+                fOrdinacija.value = lista
             }
             catch(e : Exception){
                 println("Greska: ${e.message}")
@@ -302,13 +295,11 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     }
 }
 class OrdinacijaViewModelFactory(private val storageService: StorageService,
-    private val lokacijaViewModel: LokacijaViewModel,
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(OrdinacijaViewModel::class.java)) {
             return OrdinacijaViewModel(storageService,
-                                        lokacijaViewModel,
                                         auth,
                                          firestore) as T
         }

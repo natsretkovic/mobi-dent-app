@@ -17,7 +17,7 @@ import com.example.myapplication.viewmodel.OrdinacijaViewModel
 fun ProfilOrdinacije(
     ordinacijaViewModel: OrdinacijaViewModel
 ) {
-    val ordinacija = ordinacijaViewModel.selectedOrdinacija.collectAsState().value
+    val ordinacija = ordinacijaViewModel.ordinacija.collectAsState().value
     val komentari by ordinacijaViewModel.komentariList.collectAsState(emptyList())
     val ocene by ordinacijaViewModel.oceneList.collectAsState()
 

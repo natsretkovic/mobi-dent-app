@@ -1,15 +1,14 @@
 package com.example.myapplication
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.example.myapplication.model.Korisnik
-import com.example.myapplication.model.Ordinacija
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.google.firebase.firestore.snapshots
+import com.google.firebase.firestore.toObjects
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 
 class KorisnikService(private val auth: FirebaseAuth,
@@ -18,7 +17,7 @@ class KorisnikService(private val auth: FirebaseAuth,
     //private val userId = auth.currentUser?.uid
     private val collectionName="korisnici"
     suspend fun getKorisnik(id:String): Korisnik? {
-        if(id==null){
+        if(id.isNullOrEmpty()){
             return null
         }
         val snapshot = firestore.collection(collectionName).document(id).get().await()
@@ -26,16 +25,29 @@ class KorisnikService(private val auth: FirebaseAuth,
     }
 
     suspend fun updateKorisnik(id :String, ime: String,prezime:String, brojTelefona:String) {
-        if(id==null){
+        if(id.isNullOrEmpty()){
             return
         }
         val newkorisnik = Korisnik(ime,prezime,brojTelefona)
         val snapshot = firestore.collection(collectionName).document(id)
             .set(newkorisnik, SetOptions.merge()).await()
     }
-    suspend fun getAllUsers() : List<Korisnik>{
-        val snapshot = firestore.collection(collectionName).get().await()
-        val ret = snapshot.documents.mapNotNull { it.toObject(Korisnik::class.java) }
-        return ret
+     fun getAllUsers() : Flow<List<Korisnik>> {
+         return firestore.collection(collectionName)
+             .snapshots()
+             .map{ snapshot ->
+             snapshot.toObjects()
+        }
+    }
+    fun getUser(id : String) : Flow<Korisnik?>{
+        if (id.isNullOrEmpty()) {
+            return emptyFlow()
+        }
+        return firestore.collection(collectionName)
+            .document(id)
+            .snapshots()
+            .map { snapshot ->
+                snapshot.toObject(Korisnik::class.java)
+            }
     }
 }

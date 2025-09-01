@@ -5,7 +5,11 @@ import com.example.myapplication.model.Ocena
 import com.example.myapplication.model.Ordinacija
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.snapshots
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.firestore.toObjects
+import kotlinx.coroutines.flow.map
 
 class StorageService(private val firestore: FirebaseFirestore) {
     private val auth = FirebaseAuth.getInstance()
@@ -29,7 +33,7 @@ class StorageService(private val firestore: FirebaseFirestore) {
         val komentari = getAllKomentari(ordinacijaId)
         if(!komentari.isEmpty()) {
             for (komentar in komentari) {
-                ordinacija.collection("komentari")
+                firestore.collection(collectionName).document(ordinacijaId).collection("komentari")
                     .document(komentar.id)
                     .delete()
                     .await()
@@ -38,7 +42,7 @@ class StorageService(private val firestore: FirebaseFirestore) {
         val ocene = getAllOcene(ordinacijaId)
         if(!ocene.isEmpty()) {
             for (ocena in ocene) {
-                ordinacija.collection("ocene")
+                firestore.collection(collectionName).document(ordinacijaId).collection("ocene")
                     .document(ocena.id)
                     .delete()
                     .await()
@@ -46,9 +50,12 @@ class StorageService(private val firestore: FirebaseFirestore) {
         }
         ordinacija.delete().await()
     }
-    suspend fun getAllOrdinacije() : List<Ordinacija>{
-        val snapshot = firestore.collection(collectionName).get().await()
-        return snapshot.documents.mapNotNull { it.toObject(Ordinacija::class.java) }
+    fun getAllOrdinacije(): Flow<List<Ordinacija>>{
+        return firestore.collection("kolekcijaordinacija")
+            .snapshots()
+            .map { snapshot ->
+                snapshot.toObjects()
+            }
     }
     suspend fun saveKomentar(ordinacijaId :String,komentar: Komentar): String{
         val userId = auth.currentUser?.uid ?: throw IllegalStateException("Korisnik nije prijavljen.")

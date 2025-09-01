@@ -62,8 +62,8 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     }*/
 
     init{
-        listOrdinacija()
-        getOrdinacijeFromUser(auth.currentUser?.uid)
+       listOrdinacija()
+       getOrdinacijeFromUser()
     }
 
     fun addOrdinacija(
@@ -140,11 +140,8 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
 
     fun listOrdinacija() {
         viewModelScope.launch {
-            try {
-                ordinacijaList.value = storageService.getAllOrdinacije()
-            }
-            catch(e : Exception){
-                println("Greska: ${e.message}")
+            storageService.getAllOrdinacije().collect { ordinacije ->
+                ordinacijaList.value = ordinacije
             }
         }
     }
@@ -212,16 +209,19 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
     }
     fun resetFilter(){
         viewModelScope.launch {
-            fOrdinacija.value = storageService.getAllOrdinacije()
+            storageService.getAllOrdinacije().collect { ordinacije ->
+                fOrdinacija.value = ordinacije
+            }
         }
     }
-    fun getOrdinacijeFromUser(userId : String?){
+    fun getOrdinacijeFromUser(){
         viewModelScope.launch {
             try {
-                var result = ordinacijaList.value.filter { ordinacije ->
-                    (ordinacije.userId == userId)
-                }
-                fOrdinacija.value = result
+                val uid = auth.currentUser?.uid ?: throw IllegalStateException("Korisnik nije prijavljen.")
+                val snapshot = firestore.collection("kolekcijaordinacija")
+                    .whereEqualTo("userId", uid).get().await()
+                val lista = snapshot.toObjects(Ordinacija::class.java)
+                ordinacijaList.value = lista
             }
             catch(e : Exception){
                 println("Greska: ${e.message}")
@@ -300,7 +300,6 @@ class OrdinacijaViewModel(private val storageService: StorageService,private val
             println("Korisnik nije ulogovan")
         }
     }
-
 }
 class OrdinacijaViewModelFactory(private val storageService: StorageService,
     private val lokacijaViewModel: LokacijaViewModel,

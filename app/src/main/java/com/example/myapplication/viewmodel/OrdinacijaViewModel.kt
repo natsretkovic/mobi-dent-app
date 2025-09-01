@@ -97,28 +97,6 @@ class OrdinacijaViewModel(private val storageService: StorageService,
                     }
                 }
     }
-
-    fun updateOrdinacija(
-        id: String,
-        naziv: String,
-        doktor: String,
-        procedura: String,
-        ocena: Double,
-        komentar: String
-    ) {
-        val ord = Ordinacija(
-            naziv = naziv,
-        )
-        viewModelScope.launch {
-            try {
-                storageService.update(ord)
-            }
-            catch(e : Exception){
-                println("Greska: ${e.message}")
-            }
-        }
-    }
-
     fun deleteOrdinacija(id: String) {
         try {
             if (id.isNotEmpty())

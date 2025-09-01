@@ -23,15 +23,6 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun AuthEkran(modifier: Modifier = Modifier, navController: NavHostController) {
-    val context = LocalContext.current
-   /* val locationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-        } else {
-            Toast.makeText(context, "Lokacija nije odobrena", Toast.LENGTH_SHORT).show()
-        }
-    }*/
 
     Column(
         modifier = Modifier
@@ -52,7 +43,7 @@ fun AuthEkran(modifier: Modifier = Modifier, navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(onClick = {navController.navigate("login") }, modifier = Modifier.fillMaxWidth().height(60.dp) ){
-            Text( text = "Login")
+            Text( text = "Ulogujte se")
         }
         Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = {navController.navigate("register")  }, modifier = Modifier.fillMaxWidth().height(60.dp) ){

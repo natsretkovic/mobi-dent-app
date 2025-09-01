@@ -13,7 +13,6 @@ import androidx.compose.ui.*
 import androidx.compose.ui.unit.*
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)

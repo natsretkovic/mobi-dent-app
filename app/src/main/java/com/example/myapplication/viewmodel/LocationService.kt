@@ -135,7 +135,7 @@ class LocationService() : Service() {
                     ) < 30
         }
 
-        nearbyUsers.forEach { user ->
+        nearbyUsers.take(3).forEach { user ->
             showNotification(user.ime)
         }
     }
@@ -150,7 +150,7 @@ class LocationService() : Service() {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
 
-        val notificationId = 12345
+        val notificationId = System.currentTimeMillis().toInt()
         notificationManager.notify(notificationId, notificationBuilder.build())
     }
 

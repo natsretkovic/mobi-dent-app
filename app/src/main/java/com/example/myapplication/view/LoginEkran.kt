@@ -65,7 +65,7 @@ fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel, navController: NavH
                     }
                 }
             }) {
-                Text("Login")
+                Text("Ulogujte se")
             }
         }
     }

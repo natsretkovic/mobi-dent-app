@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 class LokacijaViewModel(korisnikViewModel: KorisnikViewModel,
                         ordinacijaViewModel: OrdinacijaViewModel) : ViewModel() {
     val listenerKorisnik : StateFlow<Korisnik?> = korisnikViewModel.korisnik
-    val listenerKorisnici : StateFlow<List<Korisnik?>> = korisnikViewModel.listaKorisnika
     val listenerOrdinacija : StateFlow<List<Ordinacija>> = ordinacijaViewModel.ordinacijaList
 
     fun getOrdinacijaRadius(radius : Double) : List<Ordinacija> {

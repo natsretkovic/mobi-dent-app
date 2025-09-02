@@ -25,9 +25,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import coil.compose.AsyncImage
+import android.Manifest
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-
 
 @Composable
 fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, navContoller: NavHostController){
@@ -55,6 +55,7 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
             FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", tempFile)
         )
     }
+
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
@@ -65,6 +66,15 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
     ) { isSuccess ->
         if (isSuccess) {
             slikaUri = tempImageUri
+        }
+    }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()) {granted -> Boolean
+        if(granted){
+            cameraLauncher.launch(tempImageUri)
+        }
+        else{
+            Toast.makeText(context, "Nije dozvoljna upotreba kamere!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -124,7 +134,7 @@ fun RegistracijaEkran(modifier: Modifier = Modifier, viewModel: AuthViewModel, n
                     Text("Galerija")
                 }
                 Button(
-                    onClick = { cameraLauncher.launch(tempImageUri) },
+                    onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Kamera")

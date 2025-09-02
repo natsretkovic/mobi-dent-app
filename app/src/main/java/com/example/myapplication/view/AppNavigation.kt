@@ -30,12 +30,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     val prvaStrana = if (ulogovan) "home" else "auth"
     val context = LocalContext.current
 
-    val korisnikService = remember { KorisnikService(auth, firestore) }
-    val ordinacijaService = remember { StorageService(firestore,) }
+    val korisnikService = remember { KorisnikService(firestore) }
     val storageService = remember { StorageService(firestore) }
 
     val korisnikViewModel: KorisnikViewModel = viewModel(
-        factory = KorisnikViewModelFactory(korisnikService, auth, firestore)
+        factory = KorisnikViewModelFactory(korisnikService)
     )
     val ordinacijaViewModel: OrdinacijaViewModel = viewModel(
         factory = OrdinacijaViewModelFactory(

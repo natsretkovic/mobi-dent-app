@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import androidx.compose.runtime.snapshotFlow
 import com.example.myapplication.model.Komentar
 import com.example.myapplication.model.Ocena
 import com.example.myapplication.model.Ordinacija
@@ -19,36 +20,21 @@ class StorageService(private val firestore: FirebaseFirestore) {
         val ordinacijaSaUserId = ordinacija.copy(userId = userId)
         return firestore.collection(collectionName).add(ordinacijaSaUserId).await().id
     }
-
-    suspend fun update(ordinacija: Ordinacija)  {
-        val userId = auth.currentUser?.uid ?: throw IllegalStateException("Korisnik nije prijavljen.")
-        val ordinacijaZaUpdate = ordinacija.copy(userId = userId)
-        firestore.collection(collectionName)
-            .document(ordinacija.id)
-            .set(ordinacijaZaUpdate)
-            .await()
-    }
     suspend fun delete(ordinacijaId:String) {
         val ordinacija = firestore.collection(collectionName).document(ordinacijaId)
-        val komentari = getAllKomentari(ordinacijaId)
-        if(!komentari.isEmpty()) {
-            for (komentar in komentari) {
-                firestore.collection(collectionName).document(ordinacijaId).collection("komentari")
-                    .document(komentar.id)
-                    .delete()
-                    .await()
+        val komentari = ordinacija.collection("komentari").get().await()
+        val ocene = ordinacija.collection("ocene").get().await()
+
+        firestore.runBatch { batch ->
+            for (komentar in komentari.documents) {
+                batch.delete(komentar.reference)
             }
-        }
-        val ocene = getAllOcene(ordinacijaId)
-        if(!ocene.isEmpty()) {
-            for (ocena in ocene) {
-                firestore.collection(collectionName).document(ordinacijaId).collection("ocene")
-                    .document(ocena.id)
-                    .delete()
-                    .await()
+            for (ocena in ocene.documents) {
+                batch.delete(ocena.reference)
             }
-        }
-        ordinacija.delete().await()
+            batch.delete(ordinacija)
+        }.await()
+
     }
     fun getAllOrdinacije(): Flow<List<Ordinacija>>{
         return firestore.collection(collectionName)
@@ -78,14 +64,15 @@ class StorageService(private val firestore: FirebaseFirestore) {
             .await()
         return snapshot.documents.firstOrNull()?.toObject(Komentar::class.java)
     }
-    suspend fun getAllKomentari(ordinacijaId: String): List<Komentar> {
-        val snapshot = firestore.collection(collectionName)
+    fun getAllKomentari(ordinacijaId: String): Flow<List<Komentar>> {
+        return firestore.collection(collectionName)
             .document(ordinacijaId)
             .collection("komentari")
-            .get()
-            .await()
-
-        return snapshot.documents.mapNotNull { it.toObject(Komentar::class.java) }
+            .snapshots()
+            .map{
+                snapshots ->
+                snapshots.toObjects(Komentar::class.java)
+            }
     }
     suspend fun saveOcena(ordinacijaId :String, ocena : Ocena) :String {
         val userId = auth.currentUser?.uid ?: throw IllegalStateException("Korisnik nije prijavljen.")
@@ -106,20 +93,17 @@ class StorageService(private val firestore: FirebaseFirestore) {
             .await()
         return snapshot.documents.firstOrNull()?.toObject(Ocena::class.java)
     }
-    suspend fun getAllOcene(ordinacijaId :String) : List<Ocena> {
-        val snapshot = firestore.collection(collectionName)
-            .document(ordinacijaId)
-            .collection("ocene")
-            .get()
-            .await()
-        return snapshot.documents.mapNotNull { it.toObject(Ocena::class.java) }
-    }
-    suspend fun numOfOcena(ordinacijaId : String) : Int{
-        return getAllOcene(ordinacijaId).size
-    }
+     fun getAllOcene(ordinacijaId :String) : Flow<List<Ocena>> {
+        return  firestore.collection(collectionName)
+             .document(ordinacijaId)
+             .collection("ocene")
+             .snapshots()
+             .map { snapshot ->
+                 snapshot.toObjects(Ocena::class.java)
+             }
+     }
+}
  //ocekuje listu koja nije prazna zato mapNotNull
 
 
 
-
-}

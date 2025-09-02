@@ -12,10 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class KorisnikViewModel(private val service : KorisnikService,
-                        private val auth: FirebaseAuth,
-                        private val firestore: FirebaseFirestore) : ViewModel() {
-
+class KorisnikViewModel(private val service : KorisnikService) : ViewModel() {
+    private val auth = FirebaseAuth.getInstance()
     private val _korisnik = MutableStateFlow<Korisnik?>(null)
     val korisnik: StateFlow<Korisnik?> = _korisnik.asStateFlow()
 
@@ -58,14 +56,11 @@ class KorisnikViewModel(private val service : KorisnikService,
 // ili kad se odjavi da ne padne
 
 class KorisnikViewModelFactory(
-    private val service: KorisnikService,
-    private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
-) : ViewModelProvider.Factory {
+    private val service: KorisnikService) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(KorisnikViewModel::class.java)) {
-            return KorisnikViewModel(service, auth, firestore) as T
+            return KorisnikViewModel(service) as T
         }
         throw IllegalArgumentException("Nije u redu")
     }

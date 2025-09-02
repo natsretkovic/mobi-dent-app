@@ -79,8 +79,9 @@ fun OrdinacijaEkran(
             Button(
                 onClick = {
                     val ocenaDouble = ocenaText.toDouble()
-                    if (naziv.isBlank() || doktor.isBlank() || procedura.isBlank()) {
-                        message = "Molimo vas popunite naziv, proceduru i doktora"
+                    if (naziv.isBlank() || doktor.isBlank() || procedura.isBlank() || komentar.isBlank() ||
+                        ocenaText.isBlank()) {
+                        message = "Molimo vas popunite sva polja!"
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         return@Button
                     }

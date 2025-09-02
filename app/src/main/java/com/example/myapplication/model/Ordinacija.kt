@@ -12,4 +12,6 @@ data class Ordinacija(
     val naziv: String = "",
     val latitude:Double =0.0,
     val longitude:Double=0.0,
-    val timestamp: Date = Date()){}
+    val timestamp: Date = Date(),
+    var brojOcena : Int = 0,
+    var prosecnaOcena: Double = 0.0){}

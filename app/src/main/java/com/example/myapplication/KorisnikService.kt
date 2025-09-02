@@ -11,10 +11,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 
-class KorisnikService(private val auth: FirebaseAuth,
-                      private val firestore: FirebaseFirestore)
+class KorisnikService(private val firestore: FirebaseFirestore)
 {
-    //private val userId = auth.currentUser?.uid
     private val collectionName="korisnici"
     suspend fun getKorisnik(id:String): Korisnik? {
         if(id.isNullOrEmpty()){
@@ -22,15 +20,6 @@ class KorisnikService(private val auth: FirebaseAuth,
         }
         val snapshot = firestore.collection(collectionName).document(id).get().await()
         return snapshot.toObject(Korisnik::class.java)
-    }
-
-    suspend fun updateKorisnik(id :String, ime: String,prezime:String, brojTelefona:String) {
-        if(id.isNullOrEmpty()){
-            return
-        }
-        val newkorisnik = Korisnik(ime,prezime,brojTelefona)
-        val snapshot = firestore.collection(collectionName).document(id)
-            .set(newkorisnik, SetOptions.merge()).await()
     }
      fun getAllUsers() : Flow<List<Korisnik>> {
          return firestore.collection(collectionName)

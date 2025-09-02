@@ -30,11 +30,11 @@ class OrdinacijaViewModel(private val storageService: StorageService,
 
     private val fOrdinacija = MutableStateFlow<List<Ordinacija>>(emptyList())
     val ordinacijaFilter: StateFlow<List<Ordinacija>> = fOrdinacija
-    private val ocene = MutableStateFlow<List<Ocena>>(emptyList())
-    val oceneList : StateFlow<List<Ocena>> = ocene
+    private val _oceneList = MutableStateFlow<List<Ocena>>(emptyList())
+    val oceneList : StateFlow<List<Ocena>> = _oceneList
 
-    private val komentari = MutableStateFlow<List<Komentar>>(emptyList())
-    val komentariList: StateFlow<List<Komentar>> = komentari
+    private val _komentariList = MutableStateFlow<List<Komentar>>(emptyList())
+    val komentariList: StateFlow<List<Komentar>> = _komentariList
 
 
     fun setCurrentOrdinacija(ord: Ordinacija) {
@@ -116,13 +116,11 @@ class OrdinacijaViewModel(private val storageService: StorageService,
             }
         }
     }
-    fun filterOrdinacija(atribut: String) {
-        val atributLower = atribut.lowercase()
+    fun filterOrdinacija(naziv: String) {
         viewModelScope.launch {
             try {
-                val result = _ordinacijaList.value.filter { ordinacija ->
-                    ordinacija.naziv.lowercase().contains(atributLower)
-                }
+               val result =  firestore.collection("kolekcijaordinacija")
+                    .whereEqualTo("naziv", naziv).get().await().toObjects(Ordinacija::class.java)
                 fOrdinacija.value = result
             } catch (e: Exception) {
                 println("Greska: ${e.message}")
@@ -134,8 +132,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,
         viewModelScope.launch {
             try {
                 val result = _ordinacijaList.value.filter { ordinacija ->
-                    val komentari = storageService.getAllKomentari(ordinacija.id)
-                    komentari.any { komentar ->
+                    _komentariList.value.any { komentar ->
                             komentar.doktor.lowercase().contains(atributLower) ||
                                     komentar.procedura.lowercase().contains(atributLower)
                     } || ordinacija.naziv.lowercase().contains(atributLower)
@@ -152,8 +149,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,
         viewModelScope.launch {
             try {
                 val result = _ordinacijaList.value.filter { ordinacija ->
-                    val ordinacijaOcena = storageService.getAllOcene(ordinacija.id)
-                    ordinacijaOcena.any(){"%.1f".format(it.vrednost) == ocenaDouble}
+                    _oceneList.value.any(){"%.1f".format(it.vrednost) == ocenaDouble}
                 }
                 fOrdinacija.value = result
             }catch(e : Exception){
@@ -178,21 +174,23 @@ class OrdinacijaViewModel(private val storageService: StorageService,
             }
         }
     }
-    fun resetFilter(){
-        viewModelScope.launch {
-            storageService.getAllOrdinacije().collect { ordinacije ->
-                fOrdinacija.value = ordinacije
-            }
-        }
-    }
     fun getOrdinacijeFromUser(){
         viewModelScope.launch {
             try {
-                val uid = auth.currentUser?.uid ?: throw IllegalStateException("Korisnik nije prijavljen.")
-                val snapshot = firestore.collection("kolekcijaordinacija")
-                    .whereEqualTo("userId", uid).get().await()
-                val lista = snapshot.toObjects(Ordinacija::class.java)
-                fOrdinacija.value = lista
+                val uid = auth.currentUser?.uid
+                    ?: throw IllegalStateException("Korisnik nije prijavljen.")
+                firestore.collection("kolekcijaordinacija")
+                    .whereEqualTo("userId", uid).addSnapshotListener { snapshot, e ->
+                        if(e!=null){
+                            return@addSnapshotListener
+                        }
+                        if (snapshot != null && !snapshot.isEmpty) {
+                            val lista = snapshot.toObjects(Ordinacija::class.java)
+                            fOrdinacija.value = lista
+                        } else {
+                            fOrdinacija.value = emptyList()
+                        }
+                    }
             }
             catch(e : Exception){
                 println("Greska: ${e.message}")
@@ -202,7 +200,9 @@ class OrdinacijaViewModel(private val storageService: StorageService,
     fun getOcene(ordinacijaId : String){
         viewModelScope.launch {
             try{
-                ocene.value = storageService.getAllOcene(ordinacijaId)
+                storageService.getAllOcene(ordinacijaId).collect { ocene ->
+                    _oceneList.value = ocene
+                }
             }
             catch(e: Exception){
                 println(e.message)
@@ -212,7 +212,9 @@ class OrdinacijaViewModel(private val storageService: StorageService,
     fun getKomentari(ordinacijaId : String){
         viewModelScope.launch {
             try{
-                komentari.value = storageService.getAllKomentari(ordinacijaId)
+                storageService.getAllKomentari(ordinacijaId).collect { komentari ->
+                    _komentariList.value = komentari
+                }
             }
             catch(e: Exception){
                 println(e.message)
@@ -229,10 +231,6 @@ class OrdinacijaViewModel(private val storageService: StorageService,
                 storageService.saveOcena(ordinacijaId, novaOcena)
 
                 addPoints(ocena,komentar)
-
-                val trenutneOcene = ocene.value.toMutableList()
-                trenutneOcene.add(novaOcena)
-                ocene.value = trenutneOcene
 
             } catch (e: Exception) {
                 println(e.message)

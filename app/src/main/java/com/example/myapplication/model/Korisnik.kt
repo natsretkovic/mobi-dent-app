@@ -11,7 +11,6 @@ data class Korisnik(
     val email : String="",
     val profilnaSlikaUrl : String? = null,
     val poeni: Int = 0,
-    val rank: Int =0,
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val timestamp: Timestamp = Timestamp.now(),

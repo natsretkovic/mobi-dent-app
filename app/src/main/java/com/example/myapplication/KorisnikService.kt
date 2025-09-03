@@ -1,13 +1,10 @@
 package com.example.myapplication
 
 import com.example.myapplication.model.Korisnik
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.snapshots
 import com.google.firebase.firestore.toObjects
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 
@@ -27,16 +24,5 @@ class KorisnikService(private val firestore: FirebaseFirestore)
              .map{ snapshot ->
              snapshot.toObjects()
         }
-    }
-    fun getUser(id : String) : Flow<Korisnik?>{
-        if (id.isNullOrEmpty()) {
-            return emptyFlow()
-        }
-        return firestore.collection(collectionName)
-            .document(id)
-            .snapshots()
-            .map { snapshot ->
-                snapshot.toObject(Korisnik::class.java)
-            }
     }
 }

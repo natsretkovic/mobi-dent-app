@@ -36,7 +36,7 @@ class KorisnikViewModel(private val service : KorisnikService) : ViewModel() {
     }
     init {
         auth.addAuthStateListener(listener)
-        getAllUsersList()
+        //getAllUsersList()
     }
     override fun onCleared() {
         super.onCleared()
@@ -52,8 +52,6 @@ class KorisnikViewModel(private val service : KorisnikService) : ViewModel() {
 
 
 }
-// bez stateFlow sa userId mozda null pada kad se pokrece, zato mora da se prati dal je ulogovan
-// ili kad se odjavi da ne padne
 
 class KorisnikViewModelFactory(
     private val service: KorisnikService) : ViewModelProvider.Factory {

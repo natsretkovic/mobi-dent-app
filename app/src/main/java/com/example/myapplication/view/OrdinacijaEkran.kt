@@ -78,14 +78,19 @@ fun OrdinacijaEkran(
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    val ocenaDouble = ocenaText.toDouble()
                     if (naziv.isBlank() || doktor.isBlank() || procedura.isBlank() || komentar.isBlank() ||
                         ocenaText.isBlank()) {
+
                         message = "Molimo vas popunite sva polja!"
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                       return@Button
+                    }
+                    val ocenaDouble = ocenaText.toDoubleOrNull()
+                    if (ocenaDouble == null || ocenaDouble !in 1.0..5.0) {
+                        message = "Ocena mora biti broj izmedju 1.0 i 5.0"
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         return@Button
                     }
-
                     viewModel.addOrdinacija(naziv,doktor,procedura,ocenaDouble,komentar)
                     message = "Uspesno ste dodali ordinaciju"
                     Toast.makeText(context,message,Toast.LENGTH_SHORT).show()

@@ -87,13 +87,5 @@ class LokacijaViewModel() : ViewModel() {
     }
 
 }
-/*class LokacijaViewModelFactory(private val ordinacijaViewModel: OrdinacijaViewModel) : ViewModelProvider.Factory{
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LokacijaViewModel::class.java)) {
-            return LokacijaViewModel(ordinacijaViewModel) as T
-        }
-        throw IllegalArgumentException("Nije u redu")
-    }
 
-}*/
 

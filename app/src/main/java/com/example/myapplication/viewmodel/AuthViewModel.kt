@@ -29,10 +29,15 @@ class AuthViewModel : ViewModel() {
         ) {
         viewModelScope.launch {
             try {
+                if (ime.isNullOrEmpty() || prezime.isNullOrEmpty() || username.isNullOrEmpty() || brTelefona.isNullOrEmpty()) {
+                    onResult(false, "Popunite sve podatke")
+                    return@launch
+                }
                 if (isUsernameTaken(username)) {
                     onResult(false, "Korisnicko ime je zauzeto")
                     return@launch
                 }
+
                 val userCredential =
                     auth.createUserWithEmailAndPassword(email, password).await()
                 val user: FirebaseUser = userCredential.user ?: throw IllegalStateException("User not found")

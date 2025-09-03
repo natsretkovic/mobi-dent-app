@@ -56,15 +56,6 @@ class StorageService(private val firestore: FirebaseFirestore) {
             .id
 
     }
-    suspend fun getKomentar(ordinacijaId :String, korisnikId :String) : Komentar?{
-        val snapshot = firestore.collection(collectionName)
-            .document(ordinacijaId)
-            .collection("komentari")
-            .whereEqualTo("userId",korisnikId)
-            .get()
-            .await()
-        return snapshot.documents.firstOrNull()?.toObject(Komentar::class.java)
-    }
     fun getAllKomentari(ordinacijaId: String): Flow<List<Komentar>> {
         return firestore.collection(collectionName)
             .document(ordinacijaId)
@@ -106,15 +97,6 @@ class StorageService(private val firestore: FirebaseFirestore) {
             .update("prosecnaOcena", novaProsecnaOcena, "brojOcena", sveOcene.size)
             .await()
 
-    }
-    suspend fun getOcena(ordinacijaId :String, korisnikId :String) : Ocena?{
-        val snapshot = firestore.collection(collectionName)
-            .document(ordinacijaId)
-            .collection("ocene")
-            .whereEqualTo("userId",korisnikId)
-            .get()
-            .await()
-        return snapshot.documents.firstOrNull()?.toObject(Ocena::class.java)
     }
      fun getAllOcene(ordinacijaId :String) : Flow<List<Ocena>> {
         return  firestore.collection(collectionName)

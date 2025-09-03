@@ -117,7 +117,9 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewM
                     }) {
                         Text(text = "+")
                     }
-                    Button(onClick = { navContoller.navigate("rank") }) {
+                    Button(onClick = {
+                        korisnikViewModel.getAllUsersList()
+                        navContoller.navigate("rank") }) {
                         Text(text = "≡")
                     }
                 }

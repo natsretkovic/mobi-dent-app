@@ -54,7 +54,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
         composable("login"){
             val authViewModel: AuthViewModel = viewModel()
-            LoginEkran(modifier,authViewModel,navController)
+            LoginEkran(modifier,authViewModel,navController,lokacijaViewModel)
         }
         composable("register"){
             val authViewModel: AuthViewModel = viewModel()

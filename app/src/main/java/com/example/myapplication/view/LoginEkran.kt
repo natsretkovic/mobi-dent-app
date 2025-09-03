@@ -20,9 +20,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.myapplication.viewmodel.AuthViewModel
+import com.example.myapplication.viewmodel.LokacijaViewModel
 
 @Composable
-fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel, navController: NavHostController) {
+fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel, navController: NavHostController,lokacijaViewModel : LokacijaViewModel) {
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -52,6 +53,8 @@ fun LoginEkran(modifier: Modifier, viewModel: AuthViewModel, navController: NavH
             Button(onClick = {
                 viewModel.loginUser(username, password,) { success, errorMessage ->
                     if (success) {
+                        lokacijaViewModel.initListenerForCurrentUser()
+
                         navController.navigate("home") {
                             popUpTo("auth") {
                                 inclusive = true

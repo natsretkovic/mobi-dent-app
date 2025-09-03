@@ -13,8 +13,48 @@ import kotlinx.coroutines.flow.StateFlow
 
 class LokacijaViewModel(korisnikViewModel: KorisnikViewModel,
                         ordinacijaViewModel: OrdinacijaViewModel) : ViewModel() {
-    val listenerKorisnik : StateFlow<Korisnik?> = korisnikViewModel.korisnik
+    private val _listenerKorisnik = MutableStateFlow<Korisnik?>(null)
+    val listenerKorisnik: StateFlow<Korisnik?> = _listenerKorisnik
     val listenerOrdinacija : StateFlow<List<Ordinacija>> = ordinacijaViewModel.ordinacijaList
+    private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private var listenerRegistration : ListenerRegistration? = null
+
+
+   /* init {
+        auth.currentUser?.let { user ->
+            listenerRegistration = db.collection("korisnici").document(user.uid)
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        println("Greska kod slusanja lokacije: $error")
+                        _listenerKorisnik.value = null
+                        return@addSnapshotListener
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        val korisnik = snapshot.toObject(Korisnik::class.java)
+                        _listenerKorisnik.value = korisnik
+                    }
+                    else{
+                        _listenerKorisnik.value=null
+                    }
+                }
+        }
+    }*/
+   fun initListenerForCurrentUser() {
+       val user = auth.currentUser ?: return
+       listenerRegistration?.remove()
+
+       listenerRegistration = db.collection("korisnici").document(user.uid)
+           .addSnapshotListener { snapshot, error ->
+               if (error != null) {
+                   _listenerKorisnik.value = null
+                   println("Greska kod slušanja korisnika: $error")
+                   return@addSnapshotListener
+               }
+               _listenerKorisnik.value = snapshot?.toObject(Korisnik::class.java)
+           }
+   }
 
     fun getOrdinacijaRadius(radius : Double) : List<Ordinacija> {
         val userLocation = listenerKorisnik.value

@@ -59,25 +59,19 @@ fun GoogleMapaEkran(
     properties: MapProperties = MapProperties(),
     uiSettings: MapUiSettings = MapUiSettings(),
 ) {
-    val userLocation = lokacijaViewModel.listenerKorisnik.collectAsState(null)
-    val ordinacije = lokacijaViewModel.listenerOrdinacija.collectAsState(emptyList())
+    val userLocation = lokacijaViewModel.listenerKorisnik.collectAsState(initial = null)
+    val ordinacije = lokacijaViewModel.listenerOrdinacija.collectAsState(initial = emptyList())
     val filteredOrdinacije = viewModelOrdinacija.ordinacijaFilter.collectAsState(emptyList())
     var showOrdinacijeRadius by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
     var inputRadiusText by remember { mutableStateOf("") }
     var inputRadius by remember { mutableStateOf(0.0) }
 
-    var ordinacijeZaPrikaz : List<Ordinacija>
-    if (showOrdinacijeRadius) {
-        ordinacijeZaPrikaz = lokacijaViewModel.getOrdinacijaRadius(inputRadius)
-    } else if (searchText.isNotBlank()) {
-        ordinacijeZaPrikaz = filteredOrdinacije.value
-    } else {
-        ordinacijeZaPrikaz = ordinacije.value
-    }
-    LaunchedEffect(userLocation.value) {
+
+   /* LaunchedEffect(userLocation.value?.latitude, userLocation.value?.longitude) {
         userLocation.value?.let { loc ->
             val newPosition = LatLng(loc.latitude, loc.longitude)
+            markerState.position = newPosition
             cameraPositionState.animate(
                 update = CameraUpdateFactory.newCameraPosition(
                     CameraPosition.fromLatLngZoom(newPosition, 15f)
@@ -85,6 +79,14 @@ fun GoogleMapaEkran(
                 durationMs = 1000
             )
         }
+    }*/
+    var ordinacijeZaPrikaz : List<Ordinacija>
+    if (showOrdinacijeRadius) {
+        ordinacijeZaPrikaz = lokacijaViewModel.getOrdinacijaRadius(inputRadius)
+    } else if (searchText.isNotBlank()) {
+        ordinacijeZaPrikaz = filteredOrdinacije.value
+    } else {
+        ordinacijeZaPrikaz = ordinacije.value
     }
 
     Column(modifier= Modifier.fillMaxSize().safeContentPadding()) {
@@ -117,7 +119,7 @@ fun GoogleMapaEkran(
                 Marker(
                     state = MarkerState(position = userLatLng),
                     title = "Vi ste ovde",
-                    snippet = "Trenutna lokacija"
+                    snippet = "Trenutna lokacija",
                 )
                 if (showOrdinacijeRadius) {
                     Circle(
@@ -128,9 +130,10 @@ fun GoogleMapaEkran(
                     )
                 }
             }
-            userLocation.value?.let { loc ->
-                val newPosition = LatLng(loc.latitude, loc.longitude)
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(newPosition, 15f)
+            userLocation.value?.let{loc ->
+                val newPosition = LatLng(loc.latitude,loc.longitude)
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(newPosition,15f)
+
             }
             ordinacijeZaPrikaz.forEach { ordinacija ->
                 key(ordinacija.id) {

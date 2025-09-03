@@ -53,10 +53,6 @@ class OrdinacijaViewModel(private val storageService: StorageService,
         }
     }
 
-    /*fun resetCurrentOrdinacija() {
-        selectedOrdinacija = Ordinacija()
-    }*/
-
     init{
        listOrdinacija()
        getOrdinacijeFromUser()

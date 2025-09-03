@@ -32,6 +32,12 @@ fun ProfilOrdinacije(
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 4.dp)
         )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = "Prosecna ocena: ${ordinacija?.prosecnaOcena}",
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
         if (ordinacija != null) {
             Text(
                 text = ordinacija.naziv,

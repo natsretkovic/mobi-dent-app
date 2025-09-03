@@ -60,7 +60,7 @@ fun GoogleMapaEkran(
     uiSettings: MapUiSettings = MapUiSettings(),
 ) {
     val userLocation = lokacijaViewModel.listenerKorisnik.collectAsState(initial = null)
-    val ordinacije = lokacijaViewModel.listenerOrdinacija.collectAsState(initial = emptyList())
+    val ordinacije = lokacijaViewModel.listenerOrdinacije.collectAsState(initial = emptyList())
     val filteredOrdinacije = viewModelOrdinacija.ordinacijaFilter.collectAsState(emptyList())
     var showOrdinacijeRadius by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }

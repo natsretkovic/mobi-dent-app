@@ -69,6 +69,7 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel, navControlle
                     ordinacijaViewModel.filterOrdinacijaByAverageOcena(ocena)
                 },
                 valueRange = 0f..5f,
+                steps = 10,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))

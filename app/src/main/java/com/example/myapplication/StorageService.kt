@@ -133,7 +133,8 @@ class StorageService(private val firestore: FirebaseFirestore) {
     }
     fun filterByAverageOcena(ocena: Double): Flow<List<Ordinacija>> {
         return firestore.collection(collectionName)
-            .whereEqualTo("prosecnaOcena", ocena)
+            .whereGreaterThanOrEqualTo("prosecnaOcena", ocena)
+            .whereLessThanOrEqualTo("prosecnaOcena", ocena + 0.5)
             .snapshots()
             .map { it.toObjects(Ordinacija::class.java) }
     }

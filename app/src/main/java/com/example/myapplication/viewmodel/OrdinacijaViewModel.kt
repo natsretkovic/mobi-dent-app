@@ -19,7 +19,8 @@ import java.util.Date
 
 class OrdinacijaViewModel(private val storageService: StorageService,
                           private val auth: FirebaseAuth,
-                          private val firestore: FirebaseFirestore
+                          private val firestore: FirebaseFirestore,
+    private val lokacijaViewModel: LokacijaViewModel
 ) : ViewModel() {
 
 
@@ -35,6 +36,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,
 
     private val _komentariList = MutableStateFlow<List<Komentar>>(emptyList())
     val komentariList: StateFlow<List<Komentar>> = _komentariList
+
 
 
     fun setCurrentOrdinacija(ord: Ordinacija) {
@@ -55,7 +57,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,
 
     init{
        listOrdinacija()
-       getOrdinacijeFromUser()
+        getOrdinacijeFromUser()
     }
 
     fun addOrdinacija(
@@ -63,35 +65,41 @@ class OrdinacijaViewModel(private val storageService: StorageService,
         doktor: String,
         procedura: String,
         ocena: Double,
-        text: String,
-        longitude : Double,
-        latitude : Double
+        text: String
+       // latitude : Double,
+        //longitude : Double
     ) {
-                val novaOrdinacija = Ordinacija(
-                    naziv = naziv,
-                    latitude = latitude,
-                    longitude = longitude
-                )
-                val noviKomentar = Komentar(
-                    tekst = text,
-                    doktor = doktor,
-                    procedura = procedura
-                )
-                val novaOcena = Ocena(
-                    vrednost = checkOcena(ocena)
-                )
-                viewModelScope.launch {
-                    try {
-                        val id = storageService.save(novaOrdinacija)
-                        storageService.saveKomentar(id, noviKomentar)
-                        storageService.saveOcena(id, novaOcena)
-                        println("Ordinacija uspešno dodata.")
-                        addPoints(ocena, text)
+        val trenutnaLokacija = lokacijaViewModel.listenerKorisnik.value
+        if(trenutnaLokacija!=null) {
+            val novaOrdinacija = Ordinacija(
+                naziv = naziv,
+                latitude = trenutnaLokacija.latitude,
+                longitude = trenutnaLokacija.longitude
+            )
+            val noviKomentar = Komentar(
+                tekst = text,
+                doktor = doktor,
+                procedura = procedura
+            )
+            val novaOcena = Ocena(
+                vrednost = checkOcena(ocena)
+            )
+            viewModelScope.launch {
+                try {
+                    val id = storageService.save(novaOrdinacija)
+                    storageService.saveKomentar(id, noviKomentar)
+                    storageService.saveOcena(id, novaOcena)
+                    println("Ordinacija uspešno dodata.")
+                    addPoints(ocena, text)
 
-                    } catch (e: Exception) {
-                        println("Greska: ${e.message}")
-                    }
+                } catch (e: Exception) {
+                    println("Greska: ${e.message}")
                 }
+            }
+        }
+        else{
+            println("Lokacija je null")
+        }
     }
     fun deleteOrdinacija(id: String) {
         try {
@@ -214,12 +222,12 @@ class OrdinacijaViewModel(private val storageService: StorageService,
 }
 class OrdinacijaViewModelFactory(private val storageService: StorageService,
     private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore): ViewModelProvider.Factory {
+    private val firestore: FirebaseFirestore, private val lokacijaViewModel: LokacijaViewModel): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(OrdinacijaViewModel::class.java)) {
             return OrdinacijaViewModel(storageService,
                                         auth,
-                                         firestore) as T
+                                         firestore, lokacijaViewModel) as T
         }
         throw IllegalArgumentException("nepoznata ViewModel klasa")
     }

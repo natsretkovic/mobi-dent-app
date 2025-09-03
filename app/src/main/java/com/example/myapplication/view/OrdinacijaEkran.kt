@@ -26,8 +26,7 @@ import com.example.myapplication.viewmodel.OrdinacijaViewModel
 @Composable
 fun OrdinacijaEkran(
     modifier: Modifier = Modifier,
-    viewModel: OrdinacijaViewModel,
-    lokacijaViewModel: LokacijaViewModel
+    viewModel: OrdinacijaViewModel
 ) {
     var naziv by remember { mutableStateOf("") }
     var doktor by remember { mutableStateOf("") }
@@ -35,6 +34,7 @@ fun OrdinacijaEkran(
     var komentar by remember { mutableStateOf("") }
     var ocenaText by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
+
     val context = LocalContext.current
 
     Box(
@@ -86,9 +86,7 @@ fun OrdinacijaEkran(
                         return@Button
                     }
 
-                    viewModel.addOrdinacija(naziv,doktor,procedura,ocenaDouble,komentar,
-                        lokacijaViewModel.listenerKorisnik.value!!.longitude,
-                        lokacijaViewModel.listenerKorisnik.value!!.latitude )
+                    viewModel.addOrdinacija(naziv,doktor,procedura,ocenaDouble,komentar)
                     message = "Uspesno ste dodali ordinaciju"
                     Toast.makeText(context,message,Toast.LENGTH_SHORT).show()
                 },

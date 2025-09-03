@@ -14,7 +14,6 @@ import com.example.myapplication.viewmodel.AuthViewModel
 import com.example.myapplication.viewmodel.KorisnikViewModel
 import com.example.myapplication.viewmodel.KorisnikViewModelFactory
 import com.example.myapplication.viewmodel.LokacijaViewModel
-import com.example.myapplication.viewmodel.LokacijaViewModelFactory
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 import com.example.myapplication.viewmodel.OrdinacijaViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
@@ -36,16 +35,15 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     val korisnikViewModel: KorisnikViewModel = viewModel(
         factory = KorisnikViewModelFactory(korisnikService)
     )
+    val lokacijaViewModel: LokacijaViewModel = viewModel()
     val ordinacijaViewModel: OrdinacijaViewModel = viewModel(
         factory = OrdinacijaViewModelFactory(
             storageService,
             auth,
-            firestore
+            firestore, lokacijaViewModel
         )
     )
-    val lokacijaViewModel: LokacijaViewModel = viewModel(
-        factory = LokacijaViewModelFactory(korisnikViewModel, ordinacijaViewModel)
-    )
+
 
 
     NavHost(navController, startDestination = prvaStrana) {
@@ -61,7 +59,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             RegistracijaEkran(modifier, authViewModel, navController)
         }
         composable("home"){
-            HomeEkran(modifier,navController,korisnikViewModel)
+            HomeEkran(modifier,navController,korisnikViewModel,ordinacijaViewModel,lokacijaViewModel)
         }
         composable("map"){
             GoogleMapaEkran(lokacijaViewModel,ordinacijaViewModel)
@@ -70,7 +68,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             PratiLokaciju(context)
         }
         composable("ordinacija"){
-            OrdinacijaEkran(modifier,ordinacijaViewModel,lokacijaViewModel)
+            OrdinacijaEkran(modifier,ordinacijaViewModel)
         }
         composable("rank"){
             RankingEkran(modifier,korisnikViewModel)

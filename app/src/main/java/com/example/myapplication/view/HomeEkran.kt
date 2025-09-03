@@ -52,10 +52,12 @@ import com.example.myapplication.viewmodel.KorisnikViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import coil.compose.AsyncImage
+import com.example.myapplication.viewmodel.LokacijaViewModel
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewModel : KorisnikViewModel){
+fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewModel : KorisnikViewModel
+, ordinacijaViewModel: OrdinacijaViewModel, lokacijaViewModel: LokacijaViewModel){
 
     val korisnik by korisnikViewModel.korisnik.collectAsState()
     val imageUrl = korisnikViewModel.korisnik.collectAsState().value?.profilnaSlikaUrl
@@ -105,10 +107,14 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewM
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(onClick = { navContoller.navigate("map") }) {
+                    Button(onClick = {
+                        lokacijaViewModel.initListenerForCurrentUser()
+                        navContoller.navigate("map") }) {
                         Text(text = "Mapa")
                     }
-                    Button(onClick = { navContoller.navigate("ordinacija") }) {
+                    Button(onClick = {
+                        navContoller.navigate("ordinacija")
+                    }) {
                         Text(text = "+")
                     }
                     Button(onClick = { navContoller.navigate("rank") }) {
@@ -134,7 +140,9 @@ fun HomeEkran(modifier: Modifier, navContoller : NavHostController,korisnikViewM
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                onClick = { navContoller.navigate("editordinacije") },
+                onClick = {
+                    ordinacijaViewModel.getOrdinacijeFromUser()
+                    navContoller.navigate("editordinacije") },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Upravljaj dodatim ordinacijama")

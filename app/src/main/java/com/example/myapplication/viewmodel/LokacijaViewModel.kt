@@ -1,6 +1,7 @@
 package com.example.myapplication.viewmodel
 
 import android.location.Location
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.model.Korisnik
@@ -11,18 +12,19 @@ import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class LokacijaViewModel(korisnikViewModel: KorisnikViewModel,
-                        ordinacijaViewModel: OrdinacijaViewModel) : ViewModel() {
+class LokacijaViewModel() : ViewModel() {
     private val _listenerKorisnik = MutableStateFlow<Korisnik?>(null)
     val listenerKorisnik: StateFlow<Korisnik?> = _listenerKorisnik
-    val listenerOrdinacija : StateFlow<List<Ordinacija>> = ordinacijaViewModel.ordinacijaList
+    private val _listenerOrdinacije = MutableStateFlow<List<Ordinacija>>(emptyList())
+    val listenerOrdinacije: StateFlow<List<Ordinacija>> = _listenerOrdinacije
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private var listenerRegistration : ListenerRegistration? = null
+    private var objectListenerRegistration : ListenerRegistration? = null
 
 
-   /* init {
-        auth.currentUser?.let { user ->
+   init {
+        /*auth.currentUser?.let { user ->
             listenerRegistration = db.collection("korisnici").document(user.uid)
                 .addSnapshotListener { snapshot, error ->
                     if (error != null) {
@@ -38,9 +40,10 @@ class LokacijaViewModel(korisnikViewModel: KorisnikViewModel,
                     else{
                         _listenerKorisnik.value=null
                     }
-                }
-        }
-    }*/
+                }*/
+
+
+    }
    fun initListenerForCurrentUser() {
        val user = auth.currentUser ?: return
        listenerRegistration?.remove()
@@ -54,14 +57,24 @@ class LokacijaViewModel(korisnikViewModel: KorisnikViewModel,
                }
                _listenerKorisnik.value = snapshot?.toObject(Korisnik::class.java)
            }
+       objectListenerRegistration = db.collection("kolekcijaordinacija")
+           .addSnapshotListener { snapshot, error ->
+               if(error!=null){
+                   return@addSnapshotListener
+               }
+               if(snapshot!=null){
+                   val objectList = snapshot.toObjects(Ordinacija::class.java)
+                   _listenerOrdinacije.value = objectList
+               }
+           }
    }
 
     fun getOrdinacijaRadius(radius : Double) : List<Ordinacija> {
-        val userLocation = listenerKorisnik.value
+        val userLocation = _listenerKorisnik.value
         if(userLocation==null){
             return emptyList()
         }
-       val lista =  listenerOrdinacija.value.filter { ordinacija ->
+       val lista = _listenerOrdinacije.value.filter { ordinacija ->
             calculateDistance(userLocation.latitude, userLocation.longitude,
                                 ordinacija.latitude, ordinacija.longitude) <= radius
         }
@@ -74,14 +87,13 @@ class LokacijaViewModel(korisnikViewModel: KorisnikViewModel,
     }
 
 }
-class LokacijaViewModelFactory(private val korisnikViewModel: KorisnikViewModel,
-    private val ordinacijaViewModel: OrdinacijaViewModel) : ViewModelProvider.Factory{
+/*class LokacijaViewModelFactory(private val ordinacijaViewModel: OrdinacijaViewModel) : ViewModelProvider.Factory{
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LokacijaViewModel::class.java)) {
-            return LokacijaViewModel(korisnikViewModel, ordinacijaViewModel) as T
+            return LokacijaViewModel(ordinacijaViewModel) as T
         }
         throw IllegalArgumentException("Nije u redu")
     }
 
-}
+}*/
 

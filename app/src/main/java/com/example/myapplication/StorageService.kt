@@ -1,16 +1,17 @@
 package com.example.myapplication
 
-import androidx.compose.runtime.snapshotFlow
 import com.example.myapplication.model.Komentar
 import com.example.myapplication.model.Ocena
 import com.example.myapplication.model.Ordinacija
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import com.google.firebase.firestore.toObjects
 import kotlinx.coroutines.flow.map
+import java.util.Date
 
 class StorageService(private val firestore: FirebaseFirestore) {
     private val auth = FirebaseAuth.getInstance()
@@ -77,12 +78,34 @@ class StorageService(private val firestore: FirebaseFirestore) {
     suspend fun saveOcena(ordinacijaId :String, ocena : Ocena) :String {
         val userId = auth.currentUser?.uid ?: throw IllegalStateException("Korisnik nije prijavljen.")
         val ocenaSaOrdinacijaId = ocena.copy(ordinacijaId=ordinacijaId, userId = userId)
-        return firestore.collection(collectionName)
+
+        val ocenaId = firestore.collection(collectionName)
             .document(ordinacijaId)
             .collection("ocene")
             .add(ocenaSaOrdinacijaId)
+            .await().id
+
+        averageOcena(ordinacijaId)
+
+        return ocenaId
+    }
+    suspend fun averageOcena(ordinacijaId: String) {
+        val snapshot = firestore.collection(collectionName)
+            .document(ordinacijaId)
+            .collection("ocene")
+            .get()
             .await()
-            .id
+
+        val sveOcene = snapshot.toObjects(Ocena::class.java)
+
+        val totalOcena = sveOcene.sumOf { ocene -> ocene.vrednost }
+        val novaProsecnaOcena = if (sveOcene.isNotEmpty()) totalOcena / sveOcene.size else 0.0
+
+        firestore.collection(collectionName)
+            .document(ordinacijaId)
+            .update("prosecnaOcena", novaProsecnaOcena, "brojOcena", sveOcene.size)
+            .await()
+
     }
     suspend fun getOcena(ordinacijaId :String, korisnikId :String) : Ocena?{
         val snapshot = firestore.collection(collectionName)
@@ -102,6 +125,39 @@ class StorageService(private val firestore: FirebaseFirestore) {
                  snapshot.toObjects(Ocena::class.java)
              }
      }
+    fun filterByNaziv(naziv: String): Flow<List<Ordinacija>> {
+        return firestore.collection(collectionName)
+            .whereEqualTo("naziv", naziv)
+            .snapshots()
+            .map { it.toObjects(Ordinacija::class.java) }
+    }
+    fun filterByAverageOcena(ocena: Double): Flow<List<Ordinacija>> {
+        return firestore.collection(collectionName)
+            .whereEqualTo("prosecnaOcena", ocena)
+            .snapshots()
+            .map { it.toObjects(Ordinacija::class.java) }
+    }
+    fun filterByDatum(pocetniDatum: Date?, krajnjiDatum: Date?): Flow<List<Ordinacija>> {
+        var query: Query = firestore.collection(collectionName)
+        if (pocetniDatum != null) {
+            query = query.whereGreaterThanOrEqualTo("timestamp", pocetniDatum)
+        }
+
+        if (krajnjiDatum != null) {
+            query = query.whereLessThanOrEqualTo("timestamp", krajnjiDatum)
+        }
+
+        return query.snapshots()
+            .map { it.toObjects(Ordinacija::class.java) }
+    }
+    fun getOrdinacijeByUser(userId: String): Flow<List<Ordinacija>> {
+        return firestore.collection(collectionName)
+            .whereEqualTo("userId", userId)
+            .snapshots()
+            .map { snapshot ->
+                snapshot.toObjects(Ordinacija::class.java)
+            }
+    }
 }
  //ocekuje listu koja nije prazna zato mapNotNull
 

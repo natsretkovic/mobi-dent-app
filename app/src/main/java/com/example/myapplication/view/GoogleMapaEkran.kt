@@ -93,9 +93,8 @@ fun GoogleMapaEkran(
             onValueChange = {
                 searchText = it
                 viewModelOrdinacija.filterOrdinacija(it)
-                viewModelOrdinacija.filterOrdinacijaPoKomentarima(it)
             },
-            label = { Text("Pretraži po nazivu, doktoru ili proceduri") },
+            label = { Text("Pretraži po nazivu") },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))

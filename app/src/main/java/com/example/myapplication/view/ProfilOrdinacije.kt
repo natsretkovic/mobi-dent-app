@@ -11,6 +11,8 @@ import androidx.compose.ui.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.model.Komentar
+import com.example.myapplication.model.Ocena
 import com.example.myapplication.viewmodel.OrdinacijaViewModel
 
 @Composable
@@ -18,7 +20,7 @@ fun ProfilOrdinacije(
     ordinacijaViewModel: OrdinacijaViewModel
 ) {
     val ordinacija = ordinacijaViewModel.ordinacija.collectAsState().value
-    val komentari by ordinacijaViewModel.komentariList.collectAsState(emptyList())
+    val komentari by ordinacijaViewModel.komentariList.collectAsState()
     val ocene by ordinacijaViewModel.oceneList.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize().safeContentPadding().padding(16.dp),
@@ -43,19 +45,27 @@ fun ProfilOrdinacije(
         if (!komentari.isEmpty()) {
             LazyColumn {
                 items(komentari) { komentar ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(4.dp),
-                    ) {
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Text("Doktor: ${komentar.doktor}")
-                            Text("Procedura: ${komentar.procedura}")
-                            Text("Komentar: ${komentar.tekst}")
-                        }
+                    val oc = ocene.find {
+                        it.userId == komentar.userId && it.ordinacijaId == komentar.ordinacijaId
                     }
+                    KomentarOcenaCard(komentar,oc!!)
                 }
             }
+        }
+    }
+}
+@Composable
+fun KomentarOcenaCard(komentar : Komentar, ocena: Ocena){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth().padding(4.dp)
+
+    ){
+        Column(modifier = Modifier.padding(4.dp)){
+            Text("Doktor: ${komentar.doktor}")
+            Text("Procedura: ${komentar.procedura}")
+            Text("Komentar: ${komentar.tekst}")
+            Text("Ocena:  ${ocena.vrednost}")
         }
     }
 }

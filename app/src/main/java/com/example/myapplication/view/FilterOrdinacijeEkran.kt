@@ -15,6 +15,10 @@ import com.example.myapplication.viewmodel.OrdinacijaViewModel
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel, navController: NavController) {
@@ -51,10 +55,10 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel, navControlle
                 onValueChange = {
                     searchText = it
                     ordinacijaViewModel.filterOrdinacija(it)
-                    ordinacijaViewModel.filterOrdinacijaPoKomentarima(it)
 
                 },
-                label = { Text("Pretrazi po nazivu, doktoru ili proceduri") },
+                singleLine = true,
+                label = { Text("Pretrazi ordinaciju po nazivu") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -62,7 +66,7 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel, navControlle
                 value = ocena.toFloat(),
                 onValueChange = {
                     ocena = it.toDouble()
-                    ordinacijaViewModel.filterOrdinacijaByOcena(ocena)
+                    ordinacijaViewModel.filterOrdinacijaByAverageOcena(ocena)
                 },
                 valueRange = 0f..5f,
                 modifier = Modifier.fillMaxWidth()
@@ -96,7 +100,15 @@ fun FilterOrdinacijeEkran(ordinacijaViewModel: OrdinacijaViewModel, navControlle
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
-                        ordinacijaViewModel.filterOrdinacijaByDatum(pocetniDatum, krajnjiDatum)
+                        val start: Date? = try {
+                            if (pocetniDatum?.isNotBlank()==true) SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                .parse(pocetniDatum) else null
+                        } catch (e: Exception) { null }
+
+                        val end: Date? = try {
+                            if (krajnjiDatum?.isNotBlank()==true) SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(krajnjiDatum) else null
+                        } catch (e: Exception) { null }
+                        ordinacijaViewModel.filterOrdinacijaByDatum(start, end)
                         buttonClicked=true
                     },
                     modifier = Modifier.fillMaxWidth()

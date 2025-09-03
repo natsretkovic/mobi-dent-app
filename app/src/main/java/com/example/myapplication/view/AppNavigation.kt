@@ -73,7 +73,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             OrdinacijaEkran(modifier,ordinacijaViewModel,lokacijaViewModel)
         }
         composable("rank"){
-            RankingEkran(modifier,navController,korisnikViewModel)
+            RankingEkran(modifier,korisnikViewModel)
         }
         composable("filterOrd"){
             FilterOrdinacijeEkran(ordinacijaViewModel,navController)

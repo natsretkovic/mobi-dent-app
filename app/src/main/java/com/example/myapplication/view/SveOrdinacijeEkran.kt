@@ -132,9 +132,8 @@ fun OcenaDialog(
         confirmButton = {
             Button(onClick = {
                 val ocena = ocenaText.toDoubleOrNull() ?: 0.0
-                if (ocena in 1.0..5.0) {
+                if(ocena in 1.0..5.0)
                     onSave(ocena, komentar,doktor,procedura)
-                }
             }) {
                 Text("Sačuvaj")
             }

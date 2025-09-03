@@ -32,7 +32,7 @@ fun PratiLokaciju(context: Context) {
     ) { permissions ->
         val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                 permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        if (granted && permissionGranted) {
+        if (granted) {
             val intent = Intent(context, LocationService::class.java).apply {
                 action = LocationService.ACTION_START
             }

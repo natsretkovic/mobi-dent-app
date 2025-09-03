@@ -14,8 +14,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.Date
+
 
 class OrdinacijaViewModel(private val storageService: StorageService,
                           private val auth: FirebaseAuth,
@@ -93,7 +93,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,
                         addPoints(ocena, text)
 
                     } catch (e: Exception) {
-                        ("Greska: ${e.message}")
+                        println("Greska: ${e.message}")
                     }
                 }
     }
@@ -118,59 +118,24 @@ class OrdinacijaViewModel(private val storageService: StorageService,
     }
     fun filterOrdinacija(naziv: String) {
         viewModelScope.launch {
-            try {
-               val result =  firestore.collection("kolekcijaordinacija")
-                    .whereEqualTo("naziv", naziv).get().await().toObjects(Ordinacija::class.java)
-                fOrdinacija.value = result
-            } catch (e: Exception) {
-                println("Greska: ${e.message}")
+            storageService.filterByNaziv(naziv).collect { ordinacije ->
+                fOrdinacija.value = ordinacije
             }
         }
     }
-    fun filterOrdinacijaPoKomentarima(atribut: String) {
-        val atributLower = atribut.lowercase()
+    fun filterOrdinacijaByAverageOcena(ocena : Double){
         viewModelScope.launch {
-            try {
-                val result = _ordinacijaList.value.filter { ordinacija ->
-                    _komentariList.value.any { komentar ->
-                            komentar.doktor.lowercase().contains(atributLower) ||
-                                    komentar.procedura.lowercase().contains(atributLower)
-                    } || ordinacija.naziv.lowercase().contains(atributLower)
-                }
-                fOrdinacija.value = result
-            } catch (e: Exception) {
-                println("Greska: ${e.message}")
+            storageService.filterByAverageOcena(ocena).collect { ordinacije ->
+                fOrdinacija.value = ordinacije
             }
         }
     }
+    fun filterOrdinacijaByDatum(pocetniDatum : Date?, krajnjiDatum : Date?){
 
-    fun filterOrdinacijaByOcena(ocena : Double){
-        val ocenaDouble = "%.1f".format(ocena)
-        viewModelScope.launch {
-            try {
-                val result = _ordinacijaList.value.filter { ordinacija ->
-                    _oceneList.value.any(){"%.1f".format(it.vrednost) == ocenaDouble}
-                }
-                fOrdinacija.value = result
-            }catch(e : Exception){
-                println("Greska: ${e.message}")
-            }
 
-        }
-    }
-    fun filterOrdinacijaByDatum(pocetniDatum : String?, krajnjiDatum : String?){
         viewModelScope.launch {
-            try {
-                val formater = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val result = _ordinacijaList.value.filter { ordinacije ->
-                    val datumString = formater.format(ordinacije.timestamp)
-                    (pocetniDatum.isNullOrEmpty() || datumString >= pocetniDatum) &&
-                            (krajnjiDatum.isNullOrEmpty() || datumString <= krajnjiDatum)
-                }
-                    fOrdinacija.value = result
-            }
-            catch(e : Exception){
-                println("Greska: ${e.message}")
+            storageService.filterByDatum(pocetniDatum, krajnjiDatum).collect { ordinacije ->
+                fOrdinacija.value = ordinacije
             }
         }
     }
@@ -179,18 +144,9 @@ class OrdinacijaViewModel(private val storageService: StorageService,
             try {
                 val uid = auth.currentUser?.uid
                     ?: throw IllegalStateException("Korisnik nije prijavljen.")
-                firestore.collection("kolekcijaordinacija")
-                    .whereEqualTo("userId", uid).addSnapshotListener { snapshot, e ->
-                        if(e!=null){
-                            return@addSnapshotListener
-                        }
-                        if (snapshot != null && !snapshot.isEmpty) {
-                            val lista = snapshot.toObjects(Ordinacija::class.java)
-                            fOrdinacija.value = lista
-                        } else {
-                            fOrdinacija.value = emptyList()
-                        }
-                    }
+                storageService.getOrdinacijeByUser(uid).collect{ordinacije ->
+                    fOrdinacija.value = ordinacije
+                }
             }
             catch(e : Exception){
                 println("Greska: ${e.message}")
@@ -199,26 +155,16 @@ class OrdinacijaViewModel(private val storageService: StorageService,
     }
     fun getOcene(ordinacijaId : String){
         viewModelScope.launch {
-            try{
                 storageService.getAllOcene(ordinacijaId).collect { ocene ->
                     _oceneList.value = ocene
                 }
-            }
-            catch(e: Exception){
-                println(e.message)
-            }
         }
     }
     fun getKomentari(ordinacijaId : String){
         viewModelScope.launch {
-            try{
                 storageService.getAllKomentari(ordinacijaId).collect { komentari ->
                     _komentariList.value = komentari
                 }
-            }
-            catch(e: Exception){
-                println(e.message)
-            }
         }
     }
     fun updateOrdinaciju(ordinacijaId: String, ocena: Double, komentar: String, doktor: String, procedura: String) {
@@ -233,7 +179,7 @@ class OrdinacijaViewModel(private val storageService: StorageService,
                 addPoints(ocena,komentar)
 
             } catch (e: Exception) {
-                println(e.message)
+                println("Greska: ${e.message}")
             }
         }
     }

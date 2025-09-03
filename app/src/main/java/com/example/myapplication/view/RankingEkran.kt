@@ -18,8 +18,7 @@ import androidx.compose.runtime.getValue
 import com.example.myapplication.viewmodel.KorisnikViewModel
 
 @Composable
-fun RankingEkran(modifier: Modifier, navContoller : NavHostController,
-                 korisnikViewModel: KorisnikViewModel) {
+fun RankingEkran(modifier: Modifier, korisnikViewModel: KorisnikViewModel) {
 
     val korisnici by korisnikViewModel.listaKorisnika.collectAsState()
     val rankList = korisnici.sortedByDescending { it.poeni }
@@ -87,7 +86,7 @@ fun KorisnikRangItem(index: Int, korisnik: Korisnik) {
             }
 
             Text(
-                text = "${korisnik.poeni.toInt()} poena",
+                text = "${korisnik.poeni} poena",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium
             )
